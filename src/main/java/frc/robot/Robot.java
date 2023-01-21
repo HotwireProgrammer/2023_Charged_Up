@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
-import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -80,7 +79,8 @@ public class Robot extends TimedRobot {
 
 	// Sensors
 	public AnalogGyro headinGryo = new AnalogGyro(0);
-	public AHRS navx = new AHRS(SPI.Port.kMXP);
+	//public AHRS navx = new AHRS(SPI.Port.kMXP);
+	public AHRS navx;
 
 	// private ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 	public float encoderSpeed1 = 0;
@@ -88,9 +88,7 @@ public class Robot extends TimedRobot {
 
 	// public Encoder shooterEncoder = new Encoder();
 
-	// Drivetrain
-	DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d(headinGryo.getAngle()));
-
+	// drive train
 	public DriveTrain driveTrain = new DriveTrain(54, 55, 56, 57, navx);
 	public TalonSRX frontLeft = new TalonSRX(54);
 	public TalonSRX backLeft = new TalonSRX(55);
@@ -108,6 +106,8 @@ public class Robot extends TimedRobot {
 
 	public int pov;
 	public boolean speedToggle = false;
+
+	public Gripper gripper;
 
 	// Joysticks
 	// public Joystick driver;
@@ -390,6 +390,8 @@ public class Robot extends TimedRobot {
 		flightStickLeft = new Joystick(3);
 		flightStickRight = new Joystick(2);
 
+		gripper = new Gripper(operator);
+
 	}
 
 	// Drive Scale
@@ -427,6 +429,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void teleopPeriodic() {
+
+		gripper.TeleopPeriodic();
 
  		pwrm=12/(float)RobotController.getBatteryVoltage();
 		float rampTime = 0.0f;
