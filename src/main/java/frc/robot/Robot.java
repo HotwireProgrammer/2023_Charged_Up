@@ -228,6 +228,8 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
+		gripper.TeleopPeriodic();
+
 		// System.out.println(frontLeft.getSelectedSensorVelocity() + " front left " +
 		// backLeft.getSelectedSensorVelocity()
 		// + " back left " + frontRight.getSelectedSensorVelocity() + " front right "
@@ -401,8 +403,6 @@ public class Robot extends TimedRobot {
 
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);
 			driveTrain.SetLeftSpeed(-leftJoystick + rightJoystick);
-			System.out.println("Right " + (-leftJoystick + -rightJoystick));
-			System.out.println("Left " + (-leftJoystick + rightJoystick));
 			driveTrain.Update();
 
 			// driveTrain.SetRightSpeed(leftJoystick);
