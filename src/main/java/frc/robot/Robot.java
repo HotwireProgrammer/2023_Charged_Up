@@ -28,12 +28,11 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
-import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import com.kauailabs.navx.frc.AHRS;
+// import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -51,6 +50,11 @@ import java.util.*;
 //import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+
+import com.revrobotics.REVLibError;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 //BUTTONS
 //		TELEOP
@@ -80,7 +84,7 @@ public class Robot extends TimedRobot {
 
 	// Sensors
 	public AnalogGyro headinGryo = new AnalogGyro(0);
-	public AHRS navx = new AHRS(SPI.Port.kMXP);
+	// public AHRS navx = new AHRS(SPI.Port.kMXP);
 
 	// private ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 	public float encoderSpeed1 = 0;
@@ -89,13 +93,15 @@ public class Robot extends TimedRobot {
 	// public Encoder shooterEncoder = new Encoder();
 
 	// Drivetrain
-	DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d(headinGryo.getAngle()));
+	//DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d(headinGryo.getAngle()));
 
-	public DriveTrain driveTrain = new DriveTrain(54, 55, 56, 57, navx);
+	public DriveTrain driveTrain = new DriveTrain(54, 55, 56, 57);
 	public TalonSRX frontLeft = new TalonSRX(54);
 	public TalonSRX backLeft = new TalonSRX(55);
 	public TalonSRX frontRight = new TalonSRX(56);
 	public TalonSRX backRight = new TalonSRX(57);
+
+	private CANSparkMax motor_gripper;
 
 	// Nuemataics
 	public DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 4, 5);
@@ -122,7 +128,7 @@ public class Robot extends TimedRobot {
 
 	public HotPID navxPID = new HotPID("navx", 0.01, 0.01, 0.0);// was 0.0005
 
-	public NavxTurnPID navxturnpid = new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID);
+	// public NavxTurnPID navxturnpid = new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID);
 	public Climber climber = new Climber();
 	public TalonSRX climberOne = new TalonSRX(35);
 	public TalonSRX climberTwo = new TalonSRX(52);
@@ -170,6 +176,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
+		motor_gripper = new CANSparkMax(5, MotorType.kBrushless);
+
 		SmartDashboard.putNumber("Ballcount", 0);
 		SmartDashboard.putBoolean("TwoBall", false);
 		SmartDashboard.putBoolean("FourBallBlue", false);
@@ -215,7 +223,7 @@ public class Robot extends TimedRobot {
 		// Twoball outside
 
 		autoTwoBall = new LinkedList<AutoStep>();
-		autoTwoBall.add(new NavxReset(navx));
+		// autoTwoBall.add(new NavxReset(navx));
 		autoTwoBall.add(new IntakeDrop(intakeSolenoid, true));
 		autoTwoBall.add(new IntakeRun(intakeSeven, 0.8f));
 		// pickup first ball
@@ -231,7 +239,7 @@ public class Robot extends TimedRobot {
 		// FourBallRed
 		autoFourBallRed = new LinkedList<AutoStep>();
 		autoFourBallRed.add(new Print("red ran"));
-		autoFourBallRed.add(new NavxReset(navx));
+		// autoFourBallRed.add(new NavxReset(navx));
 		autoFourBallRed.add(new IntakeDrop(intakeSolenoid, true));
 		autoFourBallRed.add(new IntakeRun(intakeSeven, 0.8f));
 		// pickup first ball
@@ -242,12 +250,12 @@ public class Robot extends TimedRobot {
 		autoFourBallRed.add(new Wait(driveTrain, 0.3f));
 		// shoot
 		autoFourBallRed.add(new Shoot(shooter, indexer));
-		autoFourBallRed.add(new NavxTurn(driveTrain, navx, 16f, 0.15f, 2.0f));// -speed 14.15c
+		// autoFourBallRed.add(new NavxTurn(driveTrain, navx, 16f, 0.15f, 2.0f));// -speed 14.15c
 		// autoFourBall.add(new Wait(driveTrain, 0.5f));
 		autoFourBallRed.add(new EncoderForwardFeet(driveTrain, 11.5f, -0.8f));// 12
 		// autoFourBallRed.add(new NavxTurn(driveTrain, navx, -20f, 0.2f, 5f));// -speed
 		// 14.15
-		autoFourBallRed.add(new NavxTurn(driveTrain, navx, -5, 0.25f, 5.0f));// added
+		// autoFourBallRed.add(new NavxTurn(driveTrain, navx, -5, 0.25f, 5.0f));// added
 		autoFourBallRed.add(new EncoderForwardFeet(driveTrain, 2f, 0.8f));
 		autoFourBallRed.add(new Wait(driveTrain, 0.8f));
 		// autoFourBallRed.add(new NavxTurn(driveTrain, navx, 0f, 0.2f, 5f));// -speed
@@ -260,7 +268,7 @@ public class Robot extends TimedRobot {
 		// FourBallBlue
 		autoFourBallBlue = new LinkedList<AutoStep>();
 		autoFourBallBlue.add(new Print("blue ran"));
-		autoFourBallBlue.add(new NavxReset(navx));
+		// autoFourBallBlue.add(new NavxReset(navx));
 		autoFourBallBlue.add(new IntakeDrop(intakeSolenoid, true));
 		autoFourBallBlue.add(new IntakeRun(intakeSeven, 0.8f));
 		// pickup first ball
@@ -272,7 +280,7 @@ public class Robot extends TimedRobot {
 		// shoot
 		autoFourBallBlue.add(new Shoot(shooter, indexer));
 		// TODO
-		autoFourBallBlue.add(new NavxTurn(driveTrain, navx, 11f, 0.15f, 3.0f));// -speed 14
+		// autoFourBallBlue.add(new NavxTurn(driveTrain, navx, 11f, 0.15f, 3.0f));// -speed 14
 		// autoFourBall.add(new Wait(driveTrain, 0.5f));
 		autoFourBallBlue.add(new EncoderForwardFeet(driveTrain, 11.5f, -0.8f));// 12
 		autoFourBallBlue.add(new EncoderForwardFeet(driveTrain, 1f, 0.8f));
@@ -284,12 +292,12 @@ public class Robot extends TimedRobot {
 
 		// auto test
 		autoTest = new LinkedList<AutoStep>();
-		autoTest.add(new NavxReset(navx));
+		// autoTest.add(new NavxReset(navx));
 		autoTest.add(new EncoderForwardFeet(driveTrain, 5f, -0.3f));
 		autoTest.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
 		autoTest.add(new Wait(driveTrain, 0.3f));
 		autoTest.add(new Shoot(shooter, indexer));
-		autoTest.add(new NavxTurn(driveTrain, navx, 0f, 0.15f, 3.0f));// -speed 14
+		// autoTest.add(new NavxTurn(driveTrain, navx, 0f, 0.15f, 3.0f));// -speed 14
 		autoTest.add(new EncoderForwardFeet(driveTrain, 5f, 0.3f));
 
 		// autoTest.add(new NavxReset(navx));
@@ -428,7 +436,28 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
- 		pwrm=12/(float)RobotController.getBatteryVoltage();
+		// public TalonSRX frontLeft = new TalonSRX(54);
+		// public TalonSRX backLeft = new TalonSRX(55);
+		// public TalonSRX frontRight = new TalonSRX(56);
+		// public TalonSRX backRight = new TalonSRX(57);
+		System.out.println(frontLeft.getSelectedSensorVelocity()+" front left " + backLeft.getSelectedSensorVelocity()+ " back left "+ frontRight.getSelectedSensorVelocity()+ " front right "+ backRight.getSelectedSensorVelocity() + " back right");
+		// Gripper
+		{
+			float speed = 0.2f;
+			
+			speed = (float) flightStickLeft.getRawAxis(3);
+			speed = (speed -1)/2;
+			if (operator.getRawButton(2)) {
+				motor_gripper.set(speed);
+			} else if (operator.getRawButton(3)) {
+				motor_gripper.set(-speed);
+			} else {
+				motor_gripper.set(0.0f);
+			}
+
+		}
+
+		pwrm = 12 / (float) RobotController.getBatteryVoltage();
 		float rampTime = 0.0f;
 		frontLeft.configOpenloopRamp(rampTime);
 		backLeft.configOpenloopRamp(rampTime);
@@ -456,7 +485,8 @@ public class Robot extends TimedRobot {
 
 		// Intake 3=B, 4=Y
 		double intakeSpeed = 0.75f;
-		if (operator.getRawButton(3)) {
+		// was 3
+		if (operator.getRawButton(1)) {
 			intakeSeven.set(ControlMode.PercentOutput, intakeSpeed);
 			SmartDashboard.putNumber("intakeMotor", intakeSpeed);
 		} else if (operator.getRawButton(4)) {
@@ -468,7 +498,8 @@ public class Robot extends TimedRobot {
 		}
 
 		// Intake Solenoid 2=A
-		if (operator.getRawButtonPressed(2)) {
+		// was 2
+		if (operator.getRawButtonPressed(1)) {
 			if (intakeSolenoid.get() == Value.kForward) {
 				intakeDown();
 			} else if (intakeSolenoid.get() == Value.kReverse) {
@@ -596,7 +627,7 @@ public class Robot extends TimedRobot {
 	}
 
 	// ffloat navxTarget;
-	NavxTurnPID testTurn = new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID);
+	// NavxTurnPID testTurn = new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID);
 
 	// DigitalInput beamTest = new DigitalInput(1);
 	// beamTest.get();
@@ -664,7 +695,7 @@ public class Robot extends TimedRobot {
 		 * // testTurn.Update();
 		 */
 		shooter.PowerManual(0);
-		System.out.println(frontLeft.getSelectedSensorPosition());
+		// System.out.println(frontLeft.getSelectedSensorPosition());
 		driveTrain.SetBothSpeed(0);
 		driveTrain.SetCoast();
 		climber.coastMode();
@@ -696,7 +727,7 @@ public class Robot extends TimedRobot {
 			// driveTrain.SetRightSpeed((-rightJoystick));
 			// driveTrain.SetLeftSpeed((-leftJoystick));
 
-			float leftJoystick = DriveScaleSelector((float) flightStickLeft.getRawAxis(1), DriveScale.linear);
+			float leftJoystick = DriveScaleSelector((float) -flightStickLeft.getRawAxis(1), DriveScale.linear);
 			float rightJoystick = (DriveScaleSelector((float) flightStickRight.getRawAxis(0), DriveScale.linear));
 
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);

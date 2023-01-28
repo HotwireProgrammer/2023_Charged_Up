@@ -14,11 +14,13 @@ public class DriveTrain {
 	JoshMotorControllor joshmotorcontrollorRightBottomOne;
 	JoshMotorControllor joshmotorcontrollorRightBottomTwo;
 	float lerpSpeed = 1.0f;
-	public AHRS navx;
+	// public AHRS navx;
 
-	public DriveTrain(int pwm1, int pwm2, int pwm3, int pwm4, AHRS navx) {
+	public DriveTrain(int pwm1, int pwm2, int pwm3, int pwm4) {
 		joshmotorcontrollorLeftBottomOne = new JoshMotorControllor(pwm1, lerpSpeed);
 		joshmotorcontrollorLeftBottomTwo = new JoshMotorControllor(pwm2, lerpSpeed);
+		// right bottom one
+		
 		joshmotorcontrollorRightBottomOne = new JoshMotorControllor(pwm3, lerpSpeed);
 		joshmotorcontrollorRightBottomTwo = new JoshMotorControllor(pwm4, lerpSpeed);
 		int limit = 240;
@@ -29,7 +31,7 @@ public class DriveTrain {
 		joshmotorcontrollorRightBottomOne.talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, limit, threshold, time));
 		joshmotorcontrollorRightBottomTwo.talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, limit, threshold, time));
 
-		this.navx = navx;
+		// this.navx = navx;
 	}
 
 	public void Update() {
@@ -47,6 +49,7 @@ public class DriveTrain {
 	}
 
 	public void SetLeftSpeed(float Speed) {
+		System.out.println(Speed+ "speed");
 		joshmotorcontrollorLeftBottomOne.target = Speed;
 		joshmotorcontrollorLeftBottomTwo.target = Speed;
 	}
@@ -90,12 +93,13 @@ public class DriveTrain {
 
 	public double getEncoder() {
 		return joshmotorcontrollorLeftBottomTwo.talon.getSelectedSensorPosition();
+		
 	}
 	public double getEncoderLeft() {
-		return joshmotorcontrollorLeftBottomTwo.talon.getSelectedSensorPosition();
+		return joshmotorcontrollorLeftBottomOne.talon.getSelectedSensorPosition();
 	}
 	public double getEncoderRight() {
-		return joshmotorcontrollorRightBottomOne.talon.getSelectedSensorPosition();
+		return joshmotorcontrollorRightBottomTwo.talon.getSelectedSensorPosition();
 	}
 	public double getEncoderSpeed() {
 		return joshmotorcontrollorLeftBottomTwo.talon.getSelectedSensorVelocity();
