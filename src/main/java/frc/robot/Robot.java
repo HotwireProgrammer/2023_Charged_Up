@@ -70,9 +70,11 @@ public class Robot extends TimedRobot {
 
 	// Logic
 	public float pwrm = 1;
+	public double setPointArm = 0;
 
 	// Robot Components
 	public Gripper gripper;
+	public Arm arm = new Arm();
 
 	// Joysticks
 	// public Joystick driver;
@@ -230,6 +232,25 @@ public class Robot extends TimedRobot {
 
 		gripper.TeleopPeriodic();
 
+		{
+			float speed = 1.0f;
+
+			if (flightStickLeft.getRawButtonPressed(1)) {
+				setPointArm = setPointArm + 0.1;
+			} else if (flightStickRight.getRawButtonPressed(1)) {
+				setPointArm = setPointArm - 0.1;
+			}
+			arm.SetPoint(setPointArm);
+			arm.Update(operator.getRawAxis(1));
+			arm.debug();
+			if (operator.getRawButton(2)) {
+				arm.PowerManual(0);
+			}
+			driveTrain.SetCoast();
+			ControllerDrive();
+			driveTrain.Update();
+		}
+
 		// System.out.println(frontLeft.getSelectedSensorVelocity() + " front left " +
 		// backLeft.getSelectedSensorVelocity()
 		// + " back left " + frontRight.getSelectedSensorVelocity() + " front right "
@@ -299,6 +320,9 @@ public class Robot extends TimedRobot {
 	// DigitalInput beamTest = new DigitalInput(1);
 
 	public void testPeriodic() {
+
+		arm.PowerManual(0);
+		arm.ResetEncoder();
 
 		/*
 		 * Ultrasonic.setAutomaticMode(true);
