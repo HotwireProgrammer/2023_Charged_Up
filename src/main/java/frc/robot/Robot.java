@@ -51,6 +51,8 @@ import java.util.*;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
+import edu.wpi.first.wpilibj.Ultrasonic;
+
 //BUTTONS
 //		TELEOP
 
@@ -78,9 +80,11 @@ public class Robot extends TimedRobot {
 	public boolean toggleReset = true;
 
 	// Sensors
-	public AnalogGyro headinGryo = new AnalogGyro(0);
-	//public AHRS navx = new AHRS(SPI.Port.kMXP);
+	public AnalogGyro headinGryo;
+	// public AHRS navx = new AHRS(SPI.Port.kMXP);
 	public AHRS navx;
+
+	public Ultrasonic sensorUltrasonic = new Ultrasonic(6, 7);
 
 	// private ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 	public float encoderSpeed1 = 0;
@@ -141,8 +145,6 @@ public class Robot extends TimedRobot {
 	public TalonSRX MotorSeven = new TalonSRX(30);
 	public TalonSRX MotorEight = new TalonSRX(31);
 
-	public Indexer indexer = new Indexer(shooter, preshooterpid);
-	public TalonSRX indexerMotor = new TalonSRX(9);
 	boolean limitPressed;
 	public boolean toggleClimbers = false;
 
@@ -212,127 +214,16 @@ public class Robot extends TimedRobot {
 		driveTrain.SetBreak();
 		limelight.SetLight(true);
 
-		// Twoball outside
-
-		autoTwoBall = new LinkedList<AutoStep>();
-		autoTwoBall.add(new NavxReset(navx));
-		autoTwoBall.add(new IntakeDrop(intakeSolenoid, true));
-		autoTwoBall.add(new IntakeRun(intakeSeven, 0.8f));
-		// pickup first ball
-		autoTwoBall.add(new EncoderForward(driveTrain, 36000, -0.2f));
-		// move forward towards goal
-		autoTwoBall.add(new EncoderForward(driveTrain, 3500, 0.35f));
-		autoTwoBall.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
-		// shoot
-		autoTwoBall.add(new Shoot(shooter, indexer));
-		autoTwoBall.add(new IntakeDrop(intakeSolenoid, false));
-		autoTwoBall.add(new EncoderForward(driveTrain, 15000, -0.2f));
-
-		// FourBallRed
-		autoFourBallRed = new LinkedList<AutoStep>();
-		autoFourBallRed.add(new Print("red ran"));
-		autoFourBallRed.add(new NavxReset(navx));
-		autoFourBallRed.add(new IntakeDrop(intakeSolenoid, true));
-		autoFourBallRed.add(new IntakeRun(intakeSeven, 0.8f));
-		// pickup first ball
-		autoFourBallRed.add(new EncoderForward(driveTrain, 65296, -0.8f));
-		// move forward towards goal
-		// autoFourBall.add(new EncoderForward(driveTrain, 2500, 0.35f)); // 55000 .2
-		autoFourBallRed.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
-		autoFourBallRed.add(new Wait(driveTrain, 0.3f));
-		// shoot
-		autoFourBallRed.add(new Shoot(shooter, indexer));
-		autoFourBallRed.add(new NavxTurn(driveTrain, navx, 16f, 0.15f, 2.0f));// -speed 14.15c
-		// autoFourBall.add(new Wait(driveTrain, 0.5f));
-		autoFourBallRed.add(new EncoderForwardFeet(driveTrain, 11.5f, -0.8f));// 12
-		// autoFourBallRed.add(new NavxTurn(driveTrain, navx, -20f, 0.2f, 5f));// -speed
-		// 14.15
-		autoFourBallRed.add(new NavxTurn(driveTrain, navx, -5, 0.25f, 5.0f));// added
-		autoFourBallRed.add(new EncoderForwardFeet(driveTrain, 2f, 0.8f));
-		autoFourBallRed.add(new Wait(driveTrain, 0.8f));
-		// autoFourBallRed.add(new NavxTurn(driveTrain, navx, 0f, 0.2f, 5f));// -speed
-		// 14.15
-		autoFourBallRed.add(new EncoderForwardFeet(driveTrain, 9f, 0.8f));// 6
-		autoFourBallRed.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
-		autoFourBallRed.add(new Wait(driveTrain, 0.3f));
-		autoFourBallRed.add(new Shoot(shooter, indexer));
-
-		// FourBallBlue
-		autoFourBallBlue = new LinkedList<AutoStep>();
-		autoFourBallBlue.add(new Print("blue ran"));
-		autoFourBallBlue.add(new NavxReset(navx));
-		autoFourBallBlue.add(new IntakeDrop(intakeSolenoid, true));
-		autoFourBallBlue.add(new IntakeRun(intakeSeven, 0.8f));
-		// pickup first ball
-		autoFourBallBlue.add(new EncoderForward(driveTrain, 65296, -0.8f));
-		// move forward towards goal
-		// autoFourBall.add(new EncoderForward(driveTrain, 2500, 0.35f)); // 55000 .2
-		autoFourBallBlue.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
-		autoFourBallBlue.add(new Wait(driveTrain, 0.3f));
-		// shoot
-		autoFourBallBlue.add(new Shoot(shooter, indexer));
-		// TODO
-		autoFourBallBlue.add(new NavxTurn(driveTrain, navx, 11f, 0.15f, 3.0f));// -speed 14
-		// autoFourBall.add(new Wait(driveTrain, 0.5f));
-		autoFourBallBlue.add(new EncoderForwardFeet(driveTrain, 11.5f, -0.8f));// 12
-		autoFourBallBlue.add(new EncoderForwardFeet(driveTrain, 1f, 0.8f));
-		autoFourBallBlue.add(new Wait(driveTrain, 1f));
-		autoFourBallBlue.add(new EncoderForwardFeet(driveTrain, 7f, 0.8f));
-		autoFourBallBlue.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
-		autoFourBallBlue.add(new Wait(driveTrain, 0.3f));
-		autoFourBallBlue.add(new Shoot(shooter, indexer));
-
-		// auto test
-		autoTest = new LinkedList<AutoStep>();
-		autoTest.add(new NavxReset(navx));
-		autoTest.add(new EncoderForwardFeet(driveTrain, 5f, -0.3f));
-		autoTest.add(new LimelightTrack(driveTrain, shooter, limelight, 0));
-		autoTest.add(new Wait(driveTrain, 0.3f));
-		autoTest.add(new Shoot(shooter, indexer));
-		autoTest.add(new NavxTurn(driveTrain, navx, 0f, 0.15f, 3.0f));// -speed 14
-		autoTest.add(new EncoderForwardFeet(driveTrain, 5f, 0.3f));
-
-		// autoTest.add(new NavxReset(navx));
-		// autoTest.add(new Wait(driveTrain, 3f));
-		// autoTest.add(new Shoot(shooter, indexer));
-		// autoTest.add(new NavxTurn(driveTrain, navx, 11f, 0.15f, 2.0f));// -speed
-		// 14.15
-
-		// autoFourBall.add(new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID));
-
 		double autoChoice = SmartDashboard.getNumber(autoSelectKey, 0);
 		boolean TwoBall = SmartDashboard.getBoolean("TwoBall", false);
 		boolean FourBallRed = SmartDashboard.getBoolean("FourBallRed", false);
 		boolean FourBallBlue = SmartDashboard.getBoolean("FourBallBlue", false);
 		boolean Test = SmartDashboard.getBoolean("Test", false);
 
-		if (Test) {
-			autonomousSelected = autoTest;
-		} else if (FourBallRed) {
-			autonomousSelected = autoFourBallRed;
-		} else if (FourBallBlue) {
-			autonomousSelected = autoFourBallBlue;
-		} else {
-			autonomousSelected = autoTwoBall;
-		}
 		autonomousSelected.get(0).Begin();
 	}
 
 	public void autonomousPeriodic() {
-		if (indexToggle && indexer.firstBeam.get()) {
-			indexToggle = false;
-			SmartDashboard.putNumber("Ballcount", ((SmartDashboard.getNumber("Ballcount", 0)) + 1));
-		}
-		if (!indexer.firstBeam.get()) {
-			indexToggle = true;
-		}
-		if (indexToggle2 && indexer.secondBeam.get()) {
-			indexToggle2 = false;
-			SmartDashboard.putNumber("Ballcount", ((SmartDashboard.getNumber("Ballcount", 0)) - 1));
-		}
-		if (!indexer.secondBeam.get()) {
-			indexToggle2 = true;
-		}
 		SmartDashboard.putBoolean("RobotEnabled", true);
 
 		// System.out.println(driveTrain.GetEncoder());
@@ -347,9 +238,6 @@ public class Robot extends TimedRobot {
 
 			autonomousSelected.get(currentAutoStep).Update();
 
-			if (autonomousSelected.get(currentAutoStep).autoIndex) {
-				indexer.RunAutomatic();
-			}
 			if (autonomousSelected.get(currentAutoStep).runShooter) {
 				shooter.Update();
 			}
@@ -432,140 +320,14 @@ public class Robot extends TimedRobot {
 
 		gripper.TeleopPeriodic();
 
- 		pwrm=12/(float)RobotController.getBatteryVoltage();
+		pwrm = 12 / (float) RobotController.getBatteryVoltage();
 		float rampTime = 0.0f;
 		frontLeft.configOpenloopRamp(rampTime);
 		backLeft.configOpenloopRamp(rampTime);
 		frontRight.configOpenloopRamp(rampTime);
 		backRight.configOpenloopRamp(rampTime);
 
-		if (indexToggle && indexer.firstBeam.get()) {
-			indexToggle = false;
-			SmartDashboard.putNumber("Ballcount", ((SmartDashboard.getNumber("Ballcount", 0)) + 1));
-		}
-		if (!indexer.firstBeam.get()) {
-			indexToggle = true;
-		}
-		if (indexToggle2 && indexer.secondBeam.get()) {
-			indexToggle2 = false;
-			SmartDashboard.putNumber("Ballcount", ((SmartDashboard.getNumber("Ballcount", 0)) - 1));
-		}
-		if (!indexer.secondBeam.get()) {
-			indexToggle2 = true;
-		}
-
-		// System.out.println(navx.getYaw() + " yaw");
-		driveTrain.SendData();
 		SmartDashboard.putBoolean("RobotEnabled", true);
-
-		// Intake 3=B, 4=Y
-		double intakeSpeed = 0.75f;
-		if (operator.getRawButton(3)) {
-			intakeSeven.set(ControlMode.PercentOutput, intakeSpeed);
-			SmartDashboard.putNumber("intakeMotor", intakeSpeed);
-		} else if (operator.getRawButton(4)) {
-			intakeSeven.set(ControlMode.PercentOutput, -intakeSpeed);
-			SmartDashboard.putNumber("intakeMotor", -intakeSpeed);
-		} else {
-			intakeSeven.set(ControlMode.PercentOutput, 0.0f);
-			SmartDashboard.putNumber("intakeMotor", 0.0f);
-		}
-
-		// Intake Solenoid 2=A
-		if (operator.getRawButtonPressed(2)) {
-			if (intakeSolenoid.get() == Value.kForward) {
-				intakeDown();
-			} else if (intakeSolenoid.get() == Value.kReverse) {
-				intakeUp();
-			} else {
-				intakeUp();
-			}
-		}
-
-		int shootButton = 5;
-		if (operator.getRawButtonReleased(shootButton)) {
-			// shooter.Reset();
-			// preshooterpid.Reset();
-		} else {
-
-			if (operator.getRawButtonPressed(9)) {
-				if (!opToggle) {
-					opToggle = true;
-				} else {
-					shooter.Reset();
-					preshooterpid.Reset();
-					opToggle = false;
-				}
-			}
-			if (!opToggle) {
-				SmartDashboard.putBoolean("Shooter running?", true);
-				shooter.Update();
-			} else if (!operator.getRawButton(5)) {
-				SmartDashboard.putBoolean("Shooter running?", false);
-				preshooterpid.PowerManual(0);
-				shooter.PowerManual(0);
-			}
-		}
-		if (operator.getRawButton(shootButton)) {
-			toggleReset = true;
-			shooter.Update();
-			// get target distance from limelight
-			// run indexer
-			float buffer = 0.035f;// 0.02
-			float speed = 0.6f;
-			indexer.RunManualForward(speed, buffer);
-
-		} else {
-			// preshooterpid.PowerManual(0);
-			// shooter.PowerManual(0);
-
-			if (operator.getRawButton(7) && indexer.secondBeam.get()) {
-				if (toggleReset) {
-					toggleReset = false;
-					shooter.Reset();
-					// preshooterpid.preshooterPid.reset();
-				}
-				indexer.RunAutomatic();
-			} else if (operator.getRawButton(1)) {
-				SmartDashboard.putNumber("Ballcount", 0);
-				indexer.resetBallCountD();
-				indexerMotor.set(ControlMode.PercentOutput, 0.6f);
-				// shooter.pid.reset();
-				// preshooterpid.preshooterPid.reset();
-			} else {
-				indexer.RunManualForward(0, 0);
-			}
-		}
-
-		// Climber Uses POV
-
-		pov = operator.getPOV();
-		if (pov != -1) {
-			if (280 < pov || pov < 80) {
-
-				climber.climbMotors(1.0f);
-
-			} else if (100 < pov && pov < 260) {
-				climber.brakeMode();
-				climber.climbMotors(-0.5f);
-			}
-		} else {
-			climber.climbMotors(0.0f);
-		}
-
-		if (operator.getRawButtonPressed(10)) {
-			climber.Tilt();
-		}
-
-		// Lime Light
-		if (flightStickLeft.getRawButton(2)) {
-			limelight.Position(driveTrain);
-			driveTrain.SetBreak();
-		} else {
-			driveTrain.SetCoast();
-
-			ControllerDrive();
-		}
 
 		UpdateMotors();
 	}
@@ -616,6 +378,21 @@ public class Robot extends TimedRobot {
 	// DigitalInput beamTest = new DigitalInput(1);
 
 	public void testPeriodic() {
+
+		Ultrasonic.setAutomaticMode(true);
+		double ultraInches = sensorUltrasonic.getRangeInches();
+		System.out.println(ultraInches);
+		float error = (float) (ultraInches - 50);
+		float p = 0.03f;
+
+		float power = (float) -(error * p);
+
+		if (Math.abs(power) > 0.3f) {
+			power = (power/Math.abs(power))*0.3f;
+		}
+		System.out.println(power);
+		driveTrain.SetBothSpeed(power);
+
 		/*
 		 * if(beamTest.get()){
 		 * if (flightStickLeft.getRawButton(2)) {
@@ -668,11 +445,12 @@ public class Robot extends TimedRobot {
 		 * // testTurn.Update();
 		 */
 		shooter.PowerManual(0);
-		System.out.println(frontLeft.getSelectedSensorPosition());
-		driveTrain.SetBothSpeed(0);
+		// System.out.println(frontLeft.getSelectedSensorPosition());
+		// driveTrain.SetBothSpeed(0);
 		driveTrain.SetCoast();
 		climber.coastMode();
 		intakeSeven.set(ControlMode.PercentOutput, 0f);
+		driveTrain.Update();
 		UpdateMotors();
 	}
 
