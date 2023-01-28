@@ -115,6 +115,8 @@ public class Robot extends TimedRobot {
 	public int pov;
 	public boolean speedToggle = false;
 
+	public Gripper gripper;
+
 	// Joysticks
 	// public Joystick driver;
 	public Joystick operator;
@@ -398,6 +400,8 @@ public class Robot extends TimedRobot {
 		flightStickLeft = new Joystick(3);
 		flightStickRight = new Joystick(2);
 
+		gripper = new Gripper(operator);
+
 	}
 
 	// Drive Scale
@@ -485,8 +489,7 @@ public class Robot extends TimedRobot {
 
 		// Intake 3=B, 4=Y
 		double intakeSpeed = 0.75f;
-		// was 3
-		if (operator.getRawButton(1)) {
+		if (operator.getRawButton(3)) {
 			intakeSeven.set(ControlMode.PercentOutput, intakeSpeed);
 			SmartDashboard.putNumber("intakeMotor", intakeSpeed);
 		} else if (operator.getRawButton(4)) {
@@ -498,8 +501,7 @@ public class Robot extends TimedRobot {
 		}
 
 		// Intake Solenoid 2=A
-		// was 2
-		if (operator.getRawButtonPressed(1)) {
+		if (operator.getRawButtonPressed(2)) {
 			if (intakeSolenoid.get() == Value.kForward) {
 				intakeDown();
 			} else if (intakeSolenoid.get() == Value.kReverse) {
@@ -643,6 +645,21 @@ public class Robot extends TimedRobot {
 	// DigitalInput beamTest = new DigitalInput(1);
 
 	public void testPeriodic() {
+
+		Ultrasonic.setAutomaticMode(true);
+		double ultraInches = sensorUltrasonic.getRangeInches();
+		System.out.println(ultraInches);
+		float error = (float) (ultraInches - 50);
+		float p = 0.03f;
+
+		float power = (float) -(error * p);
+
+		if (Math.abs(power) > 0.3f) {
+			power = (power/Math.abs(power))*0.3f;
+		}
+		System.out.println(power);
+		driveTrain.SetBothSpeed(power);
+
 		/*
 		 * if(beamTest.get()){
 		 * if (flightStickLeft.getRawButton(2)) {
@@ -695,11 +712,12 @@ public class Robot extends TimedRobot {
 		 * // testTurn.Update();
 		 */
 		shooter.PowerManual(0);
-		// System.out.println(frontLeft.getSelectedSensorPosition());
+		System.out.println(frontLeft.getSelectedSensorPosition());
 		driveTrain.SetBothSpeed(0);
 		driveTrain.SetCoast();
 		climber.coastMode();
 		intakeSeven.set(ControlMode.PercentOutput, 0f);
+		driveTrain.Update();
 		UpdateMotors();
 	}
 
