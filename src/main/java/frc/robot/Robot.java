@@ -74,9 +74,7 @@ public class Robot extends TimedRobot {
 	// Logic
 	public float pwrm = 1;
 
-	public int pov;
-	public boolean speedToggle = false;
-
+	// Robot Components
 	public Gripper gripper;
 
 	// Joysticks
@@ -87,37 +85,8 @@ public class Robot extends TimedRobot {
 	public Joystick flightStickRight;
 
 	public Limelight limelight = new Limelight();
-	public PreShooterpid preshooterpid = new PreShooterpid(limelight);
-	public Shooter shooter = new Shooter(limelight, preshooterpid);
 
 	public HotPID navxPID = new HotPID("navx", 0.01, 0.01, 0.0);// was 0.0005
-
-	// public NavxTurnPID navxturnpid = new NavxTurnPID(driveTrain, navx, 10, 2.5f,
-	// navxPID);
-	public Climber climber = new Climber();
-	public TalonSRX climberOne = new TalonSRX(35);
-	public TalonSRX climberTwo = new TalonSRX(52);
-
-	// Motors
-
-	// Swervy Auto Stuff
-
-	public boolean opToggle;
-	// public TalonSRX forTesting = new TalonSRX(51);
-	public TalonSRX intakeSeven = new TalonSRX(2);
-	public TalonSRX ShooterLeft = new TalonSRX(50);
-	public TalonSRX ShooterRight = new TalonSRX(6);
-	public TalonSRX preShooterFive = new TalonSRX(4);
-
-	public TalonSRX MotorSeven = new TalonSRX(30);
-	public TalonSRX MotorEight = new TalonSRX(31);
-
-	public Indexer indexer = new Indexer(shooter, preshooterpid);
-	public TalonSRX indexerMotor = new TalonSRX(9);
-	boolean limitPressed;
-	public boolean toggleClimbers = false;
-
-	public HotPID turnPID;
 
 	public enum DriveScale {
 		linear, squared, tangent, inverse, cb, cbrt,
@@ -127,11 +96,8 @@ public class Robot extends TimedRobot {
 	public RobotState currentState;
 
 	// Auto
+	public LinkedList<AutoStep> firstAuto;
 	public LinkedList<AutoStep> autonomousSelected;
-	public LinkedList<AutoStep> autoFourBallRed;
-	public LinkedList<AutoStep> autoFourBallBlue;
-	public LinkedList<AutoStep> autoTwoBall;
-	public LinkedList<AutoStep> autoTest;
 	public int currentAutoStep = 0;
 
 	public String autoSelectKey = "autoMode";
@@ -151,8 +117,6 @@ public class Robot extends TimedRobot {
 		CameraServer.startAutomaticCapture();
 		limelight.SetLight(false);
 		limelight.Init();
-		shooter.Init();
-		preshooterpid.Init();
 		SmartDashboard.putNumber(autoSelectKey, 0);
 
 	}
@@ -178,7 +142,6 @@ public class Robot extends TimedRobot {
 	}
 
 	public void autonomousInit() {
-		climber.errorSet();
 		currentAutoStep = 0;
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(1);
 
@@ -218,17 +181,11 @@ public class Robot extends TimedRobot {
 
 	public void teleopInit() {
 
-		climber.errorSet();
 		// navx.reset();
 		limelight.SetLight(false);
 
-		turnPID = new HotPID("turn", 0, 0, 0);
-
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(0);
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
-
-		shooter.Init();
-		preshooterpid.Init();
 
 		driveTrain.SetCoast();
 
@@ -333,11 +290,6 @@ public class Robot extends TimedRobot {
 		operator = new Joystick(1);
 		flightStickLeft = new Joystick(3);
 		flightStickRight = new Joystick(2);
-		preshooterpid.Init();
-		shooter.Init();
-		// encodererror1 = climberOne.getSelectedSensorPosition();
-		// encodererror2 = climberTwo.getSelectedSensorPosition();
-
 	}
 
 	public float Lerp(float v0, float v1, float t) {
@@ -437,12 +389,9 @@ public class Robot extends TimedRobot {
 		 * 
 		 * // testTurn.Update();
 		 */
-		shooter.PowerManual(0);
 		System.out.println(frontLeft.getSelectedSensorPosition());
 		driveTrain.SetBothSpeed(0);
 		driveTrain.SetCoast();
-		climber.coastMode();
-		intakeSeven.set(ControlMode.PercentOutput, 0f);
 		driveTrain.Update();
 		UpdateMotors();
 	}
