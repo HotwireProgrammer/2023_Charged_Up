@@ -17,19 +17,24 @@ public class DriveTrain {
 	// public AHRS navx;
 
 	public DriveTrain(int pwm1, int pwm2, int pwm3, int pwm4) {
-		joshmotorcontrollorLeftBottomOne = new JoshMotorControllor(pwm1, lerpSpeed);
-		joshmotorcontrollorLeftBottomTwo = new JoshMotorControllor(pwm2, lerpSpeed);
+		joshmotorcontrollorLeftBottomOne = new JoshMotorControllor(pwm1, lerpSpeed, true);
+		joshmotorcontrollorLeftBottomTwo = new JoshMotorControllor(pwm2, lerpSpeed, true);
 		// right bottom one
-		
-		joshmotorcontrollorRightBottomOne = new JoshMotorControllor(pwm3, lerpSpeed);
-		joshmotorcontrollorRightBottomTwo = new JoshMotorControllor(pwm4, lerpSpeed);
+
+		joshmotorcontrollorRightBottomOne = new JoshMotorControllor(pwm3, lerpSpeed, true);
+		joshmotorcontrollorRightBottomTwo = new JoshMotorControllor(pwm4, lerpSpeed, true);
+
 		int limit = 240;
 		int threshold = 240;
 		float time = 0.001f;
-		joshmotorcontrollorLeftBottomOne.talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, limit, threshold, time));
-		joshmotorcontrollorLeftBottomTwo.talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, limit, threshold, time));
-		joshmotorcontrollorRightBottomOne.talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, limit, threshold, time));
-		joshmotorcontrollorRightBottomTwo.talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, limit, threshold, time));
+		// joshmotorcontrollorLeftBottomOne.talon.configSupplyCurrentLimit(new
+		// SupplyCurrentLimitConfiguration(false, limit, threshold, time));
+		// joshmotorcontrollorLeftBottomTwo.talon.configSupplyCurrentLimit(new
+		// SupplyCurrentLimitConfiguration(false, limit, threshold, time));
+		// joshmotorcontrollorRightBottomOne.talon.configSupplyCurrentLimit(new
+		// SupplyCurrentLimitConfiguration(false, limit, threshold, time));
+		// joshmotorcontrollorRightBottomTwo.talon.configSupplyCurrentLimit(new
+		// SupplyCurrentLimitConfiguration(false, limit, threshold, time));
 
 		// this.navx = navx;
 	}
@@ -42,14 +47,18 @@ public class DriveTrain {
 	}
 
 	public void SendData() {
-		SmartDashboard.putNumber("DriveTrain_LeftOne", joshmotorcontrollorLeftBottomOne.talon.getTemperature());
-		SmartDashboard.putNumber("DriveTrain_LeftTwo", joshmotorcontrollorLeftBottomTwo.talon.getTemperature());
-		SmartDashboard.putNumber("DriveTrain_RightOne", joshmotorcontrollorRightBottomOne.talon.getTemperature());
-		SmartDashboard.putNumber("DriveTrain_RightTwo", joshmotorcontrollorRightBottomTwo.talon.getTemperature());
+		// SmartDashboard.putNumber("DriveTrain_LeftOne",
+		// joshmotorcontrollorLeftBottomOne.talon.getTemperature());
+		// SmartDashboard.putNumber("DriveTrain_LeftTwo",
+		// joshmotorcontrollorLeftBottomTwo.talon.getTemperature());
+		// SmartDashboard.putNumber("DriveTrain_RightOne",
+		// joshmotorcontrollorRightBottomOne.talon.getTemperature());
+		// SmartDashboard.putNumber("DriveTrain_RightTwo",
+		// joshmotorcontrollorRightBottomTwo.talon.getTemperature());
 	}
 
 	public void SetLeftSpeed(float Speed) {
-		System.out.println(Speed+ "speed");
+		System.out.println(Speed + "speed");
 		joshmotorcontrollorLeftBottomOne.target = Speed;
 		joshmotorcontrollorLeftBottomTwo.target = Speed;
 	}
@@ -93,14 +102,16 @@ public class DriveTrain {
 
 	public double getEncoder() {
 		return joshmotorcontrollorLeftBottomTwo.talon.getSelectedSensorPosition();
-		
 	}
+
 	public double getEncoderLeft() {
 		return joshmotorcontrollorLeftBottomOne.talon.getSelectedSensorPosition();
 	}
+
 	public double getEncoderRight() {
 		return joshmotorcontrollorRightBottomTwo.talon.getSelectedSensorPosition();
 	}
+
 	public double getEncoderSpeed() {
 		return joshmotorcontrollorLeftBottomTwo.talon.getSelectedSensorVelocity();
 	}

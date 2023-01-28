@@ -8,18 +8,34 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class JoshMotorControllor {
 
+	public PWMVictorSPX victor;
 	public TalonSRX talon;
 	public float accelValue;
 	public float target;
 
-	public JoshMotorControllor(int motorpwm, float AcelerationMax) {
-		talon = new TalonSRX(motorpwm);
+	private boolean usingVictor;
+
+	public JoshMotorControllor(int motorpwm, float AcelerationMax, boolean usingVictor) {
+		if (usingVictor) {
+			victor = new PWMVictorSPX(motorpwm);
+		} else {
+			talon = new TalonSRX(motorpwm);
+		}
+
 		accelValue = AcelerationMax;
+		this.usingVictor = usingVictor;
 	}
 
 	public void UpdateMotor() {
-		if (talon != null) {
-			double curr = talon.getMotorOutputPercent();
+		if (talon != null || victor != null) {
+
+			double curr = 0;
+			if (talon != null) {
+				curr = talon.getMotorOutputPercent();
+			}
+			if (victor != null) {
+				curr = victor.get();
+			}
 
 			float newValue = Lerp((float) curr, target, accelValue);
 
@@ -28,7 +44,11 @@ public class JoshMotorControllor {
 				newValue = 0.0f;
 			}
 
-			talon.set(ControlMode.PercentOutput, target);
+			if (usingVictor) {
+				victor.set(newValue);
+			} else {
+				talon.set(ControlMode.PercentOutput, target);
+			}
 		}
 	}
 
@@ -37,10 +57,14 @@ public class JoshMotorControllor {
 	}
 
 	public void SetBrake() {
-		talon.setNeutralMode(NeutralMode.Brake);
+		if (talon != null) {
+			talon.setNeutralMode(NeutralMode.Brake);
+		}
 	}
 
 	public void SetCoast() {
-		talon.setNeutralMode(NeutralMode.Coast);
+		if (talon != null) {
+			talon.setNeutralMode(NeutralMode.Coast);
+		}
 	}
 }

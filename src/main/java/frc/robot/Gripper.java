@@ -10,17 +10,17 @@ public class Gripper {
 
     private CANSparkMax motorGripper = new CANSparkMax(5, MotorType.kBrushless);
 
-    private Joystick operator;
+    private Robot robot;
 
     private boolean close = false;
 
-    public Gripper(Joystick operator) {
-        this.operator = operator;
+    public Gripper(Robot robot) {
+        this.robot = robot;
     }
 
     public void TeleopPeriodic() {
 
-        if (operator.getRawButtonPressed(7)) {
+        if (robot.operator.getRawButtonPressed(7)) {
             close = true;
         }
 
@@ -28,7 +28,7 @@ public class Gripper {
             motorGripper.set(-0.2);
         }
 
-        if (operator.getRawButton(8)) {
+        if (robot.operator.getRawButton(8)) {
             close = false;
             motorGripper.set(0.2);
         } else if (close == false) {

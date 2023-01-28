@@ -62,14 +62,11 @@ public class Robot extends TimedRobot {
 	public AnalogGyro headinGryo = new AnalogGyro(0);
 
 	// Drive train
-	public DriveTrain driveTrain = new DriveTrain(54, 55, 56, 57);
-	public TalonSRX frontLeft = new TalonSRX(54);
-	public TalonSRX backLeft = new TalonSRX(55);
-	public TalonSRX frontRight = new TalonSRX(56);
-	public TalonSRX backRight = new TalonSRX(57);
-
-	// Motors
-	private CANSparkMax motor_gripper;
+	public DriveTrain driveTrain = new DriveTrain(0, 1, 2, 3);
+	// public TalonSRX frontLeft = new TalonSRX(54);
+	// public TalonSRX backLeft = new TalonSRX(55);
+	// public TalonSRX frontRight = new TalonSRX(56);
+	// public TalonSRX backRight = new TalonSRX(57);
 
 	// Logic
 	public float pwrm = 1;
@@ -107,8 +104,6 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
-		motor_gripper = new CANSparkMax(5, MotorType.kBrushless);
-
 		SmartDashboard.putNumber("Ballcount", 0);
 		SmartDashboard.putBoolean("TwoBall", false);
 		SmartDashboard.putBoolean("FourBallBlue", false);
@@ -119,11 +114,11 @@ public class Robot extends TimedRobot {
 		limelight.Init();
 		SmartDashboard.putNumber(autoSelectKey, 0);
 
+		gripper = new Gripper(this);
 	}
 
 	public void periodic() {
 		var heading = Rotation2d.fromDegrees(headinGryo.getAngle());
-
 	}
 
 	public void disabledInit() {
@@ -195,8 +190,6 @@ public class Robot extends TimedRobot {
 		flightStickLeft = new Joystick(3);
 		flightStickRight = new Joystick(2);
 
-		gripper = new Gripper(operator);
-
 	}
 
 	// Drive Scale
@@ -235,34 +228,17 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
-		// public TalonSRX frontLeft = new TalonSRX(54);
-		// public TalonSRX backLeft = new TalonSRX(55);
-		// public TalonSRX frontRight = new TalonSRX(56);
-		// public TalonSRX backRight = new TalonSRX(57);
-		System.out.println(frontLeft.getSelectedSensorVelocity() + " front left " + backLeft.getSelectedSensorVelocity()
-				+ " back left " + frontRight.getSelectedSensorVelocity() + " front right "
-				+ backRight.getSelectedSensorVelocity() + " back right");
-		// Gripper
-		{
-			float speed = 0.2f;
-
-			speed = (float) flightStickLeft.getRawAxis(3);
-			speed = (speed - 1) / 2;
-			if (operator.getRawButton(2)) {
-				motor_gripper.set(speed);
-			} else if (operator.getRawButton(3)) {
-				motor_gripper.set(-speed);
-			} else {
-				motor_gripper.set(0.0f);
-			}
-		}
+		// System.out.println(frontLeft.getSelectedSensorVelocity() + " front left " +
+		// backLeft.getSelectedSensorVelocity()
+		// + " back left " + frontRight.getSelectedSensorVelocity() + " front right "
+		// + backRight.getSelectedSensorVelocity() + " back right");
 
 		pwrm = 12 / (float) RobotController.getBatteryVoltage();
 		float rampTime = 0.0f;
-		frontLeft.configOpenloopRamp(rampTime);
-		backLeft.configOpenloopRamp(rampTime);
-		frontRight.configOpenloopRamp(rampTime);
-		backRight.configOpenloopRamp(rampTime);
+		// frontLeft.configOpenloopRamp(rampTime);
+		// backLeft.configOpenloopRamp(rampTime);
+		// frontRight.configOpenloopRamp(rampTime);
+		// backRight.configOpenloopRamp(rampTime);
 
 		driveTrain.SendData();
 		SmartDashboard.putBoolean("RobotEnabled", true);
@@ -389,7 +365,7 @@ public class Robot extends TimedRobot {
 		 * 
 		 * // testTurn.Update();
 		 */
-		System.out.println(frontLeft.getSelectedSensorPosition());
+		// System.out.println(frontLeft.getSelectedSensorPosition());
 		driveTrain.SetBothSpeed(0);
 		driveTrain.SetCoast();
 		driveTrain.Update();
@@ -425,8 +401,8 @@ public class Robot extends TimedRobot {
 
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);
 			driveTrain.SetLeftSpeed(-leftJoystick + rightJoystick);
-			// System.out.println("Right " + (-leftJoystick + -rightJoystick));
-			// System.out.println("Left " + (-leftJoystick + rightJoystick));
+			System.out.println("Right " + (-leftJoystick + -rightJoystick));
+			System.out.println("Left " + (-leftJoystick + rightJoystick));
 			driveTrain.Update();
 
 			// driveTrain.SetRightSpeed(leftJoystick);
