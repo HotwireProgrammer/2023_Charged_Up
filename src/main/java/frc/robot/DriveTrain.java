@@ -58,7 +58,6 @@ public class DriveTrain {
 	}
 
 	public void SetLeftSpeed(float Speed) {
-		System.out.println(Speed + "speed");
 		joshmotorcontrollorLeftBottomOne.target = Speed;
 		joshmotorcontrollorLeftBottomTwo.target = Speed;
 	}
