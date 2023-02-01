@@ -150,10 +150,14 @@ public class Robot extends TimedRobot {
 		double autoChoice = SmartDashboard.getNumber(autoSelectKey, 0);
 		boolean Test = SmartDashboard.getBoolean("Test", false);
 
-		//firstAuto.add(new TimedForward(driveTrain, 1, 0.2f));
+		// firstAuto.add(new TimedForward(driveTrain, 1, 0.2f));
 		firstAuto = new LinkedList<AutoStep>();
 
+		firstAuto.add(new GripperStep(gripper, true));
 		firstAuto.add(new ArmMove(arm, 1.5f, 0.1f));
+		firstAuto.add(new GripperStep(gripper, false));
+		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
+		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 
 		autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
@@ -161,6 +165,7 @@ public class Robot extends TimedRobot {
 
 	public void autonomousPeriodic() {
 		SmartDashboard.putBoolean("RobotEnabled", true);
+		gripper.AutoPeriodic();
 
 		// autonomous loop
 		System.out.println("Current auto step " + currentAutoStep);
@@ -236,7 +241,7 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
-		gripper.TeleopPeriodic();
+		gripper.teleopPeriodic();
 
 		{
 			float speed = 1.0f;
