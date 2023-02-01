@@ -150,6 +150,12 @@ public class Robot extends TimedRobot {
 		double autoChoice = SmartDashboard.getNumber(autoSelectKey, 0);
 		boolean Test = SmartDashboard.getBoolean("Test", false);
 
+		//firstAuto.add(new TimedForward(driveTrain, 1, 0.2f));
+		firstAuto = new LinkedList<AutoStep>();
+
+		firstAuto.add(new ArmMove(arm, 1.5f, 0.1f));
+
+		autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
 	}
 

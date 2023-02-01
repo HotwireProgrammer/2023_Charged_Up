@@ -17,11 +17,11 @@ public class Print extends AutoStep {
     }
 
     public void Begin() {
-       
+
     }
 
     public void Update() {
         System.out.println(string);
-            isDone = true;
+        isDone = true;
     }
 }

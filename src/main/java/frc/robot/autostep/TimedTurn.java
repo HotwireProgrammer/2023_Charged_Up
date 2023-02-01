@@ -17,6 +17,7 @@ public class TimedTurn extends AutoStep {
         this.time = time;
         this.speed = speed;
         turnTime = new Timer();
+        this.driveTrain=driveTrain;
     }
 
     public void Begin() {
