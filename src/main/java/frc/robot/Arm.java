@@ -40,18 +40,17 @@ public class Arm {
     public void Update(double VertStick) {
         encoderArmTicks = motorArm.getSelectedSensorPosition();
         encoderArmRadians = (encoderArmTicks / 35000 * 3.14);
-        System.out.println(pidArm.calculate(encoderArmRadians, setPointArm));
+        //System.out.println(pidArm.calculate(encoderArmRadians, setPointArm));
         // powerArm = idlePowerArm * Math.cos(encoderArmRadians) +
         // pidArm.calculate(encoderArmRadians,setPointArm);
         powerArm = idlePowerArm * Math.cos(encoderArmRadians) + VertStick;
 
         motorArm.set(ControlMode.PercentOutput, powerArm * 10 / RobotController.getBatteryVoltage());
-        System.out.println(setPointArm);
+        //System.out.println(setPointArm);
     }
 
     public void debug() {
-        System.out.println(setPointArm + " setpoint arm and arm pos " + encoderArmRadians / 3.14 + " and arm power out "
-                + powerArm);
+        //System.out.println(setPointArm + " setpoint arm and arm pos " + encoderArmRadians / 3.14 + " and arm power out " + powerArm);
     }
 
     public void SetPoint(double setPointArm) {

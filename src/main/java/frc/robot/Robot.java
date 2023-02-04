@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
-// import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
 
 	// Sensors
 	public AnalogGyro headinGryo = new AnalogGyro(0);
+	public AHRS sensorNavx = new AHRS();
 
 	// Drive train
 	public DriveTrain driveTrain = new DriveTrain(0, 1, 2, 3);
@@ -223,7 +224,6 @@ public class Robot extends TimedRobot {
 				output = output * 0.5f;
 			}
 
-			System.out.println(output + "meow");
 			return output;
 
 		} else if (selection == DriveScale.tangent) {
@@ -240,6 +240,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void teleopPeriodic() {
+
+		//System.out.println(sensorNavx.getYaw());
 
 		gripper.teleopPeriodic();
 
