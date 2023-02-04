@@ -154,11 +154,15 @@ public class Robot extends TimedRobot {
 		// firstAuto.add(new TimedForward(driveTrain, 1, 0.2f));
 		firstAuto = new LinkedList<AutoStep>();
 
-		firstAuto.add(new GripperStep(gripper, true));
-		firstAuto.add(new ArmMove(arm, 1.5f, 0.1f));
-		firstAuto.add(new GripperStep(gripper, false));
-		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
-		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
+		firstAuto.add(new NavxReset(sensorNavx));
+		firstAuto.add(new NavxDriveUntil(sensorNavx, 8, 0.5f, driveTrain));
+		firstAuto.add(new TimedForward(driveTrain, 2, -0.5f));
+		firstAuto.add(new TimedTurn(driveTrain, 0.5f, -0.6f));
+		// firstAuto.add(new GripperStep(gripper, true));
+		// firstAuto.add(new ArmMove(arm, 1.5f, 0.1f));
+		// firstAuto.add(new GripperStep(gripper, false));
+		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
+		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 
 		autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
@@ -189,6 +193,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void teleopInit() {
+
+		sensorNavx.reset();
 
 		// navx.reset();
 		limelight.SetLight(false);
@@ -241,7 +247,7 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
-		//System.out.println(sensorNavx.getYaw());
+		System.out.println(sensorNavx.getRoll());
 
 		gripper.teleopPeriodic();
 
