@@ -10,6 +10,7 @@ public class NavxDriveUntil extends AutoStep {
     public float degree;
     public float speed;
     public DriveTrain drivetrain;
+    public boolean didClimb;
 
     public NavxDriveUntil(AHRS navx, float degree, float speed, DriveTrain drivetrain) {
         this.navx = navx;
@@ -24,11 +25,17 @@ public class NavxDriveUntil extends AutoStep {
 
     public void Update() {
         System.out.println(navx.getRoll());
-        if (degree > navx.getRoll()) {
-            drivetrain.SetBothSpeed(speed);
-        } else {
-            drivetrain.SetBothSpeed(0);
-            isDone = true;
+
+        drivetrain.SetBothSpeed(speed);
+
+        if (navx.getRoll() < -10) {
+            didClimb = true;
         }
+        if (didClimb && navx.getRoll() > -3) {
+            isDone = true;
+            drivetrain.SetBothSpeed(0);
+
+        }
+      
     }
 }

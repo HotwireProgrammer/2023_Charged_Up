@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
 	public Limelight limelight = new Limelight();
 
 	public HotPID navxPID = new HotPID("navx", 0.01, 0.01, 0.0);// was 0.0005
+	public HotPID pidAutoBalance = new HotPID("Balance", -0.05, 0, 0);
 
 	public enum DriveScale {
 		linear, squared, tangent, inverse, cb, cbrt,
@@ -155,9 +156,9 @@ public class Robot extends TimedRobot {
 		firstAuto = new LinkedList<AutoStep>();
 
 		firstAuto.add(new NavxReset(sensorNavx));
-		firstAuto.add(new NavxDriveUntil(sensorNavx, 8, 0.5f, driveTrain));
-		firstAuto.add(new TimedForward(driveTrain, 2, -0.5f));
-		firstAuto.add(new TimedTurn(driveTrain, 0.5f, -0.6f));
+		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));
+		firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
+		firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
 		// firstAuto.add(new GripperStep(gripper, true));
 		// firstAuto.add(new ArmMove(arm, 1.5f, 0.1f));
 		// firstAuto.add(new GripperStep(gripper, false));
@@ -286,12 +287,21 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("RobotEnabled", true);
 
 		// Lime Light
-		if (flightStickLeft.getRawButton(2)) {
+		if (flightStickLeft.getRawButton(3)) {
 			limelight.Position(driveTrain);
 			driveTrain.SetBreak();
 		} else {
 			driveTrain.SetCoast();
+			// ControllerDrive();
+		}
 
+		if (flightStickLeft.getRawButton(2)) {
+			// auto balance
+
+			float error = sensorNavx.getRoll();
+			double output = pidAutoBalance.Calculate(error);
+			driveTrain.SetBothSpeed((float)output);
+		} else {
 			ControllerDrive();
 		}
 
