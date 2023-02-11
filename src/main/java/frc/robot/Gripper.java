@@ -37,7 +37,7 @@ public class Gripper {
 
         if (robot.operator.getRawButton(8)) {
             close = false;
-            motorGripper.set(0.2);
+            motorGripper.set(0.5);
         } else if (close == false) {
             motorGripper.set(0.0);
         }
