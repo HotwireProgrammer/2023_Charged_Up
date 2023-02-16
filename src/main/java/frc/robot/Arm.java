@@ -3,6 +3,9 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,23 +14,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Arm {
 
     // Arm
-    public TalonSRX motorArm = new TalonSRX(53);
+    public CANSparkMax motorArmRetraction = new CANSparkMax(13, MotorType.kBrushless);
+    public CANSparkMax motorArm1 = new CANSparkMax(11, MotorType.kBrushless);
+    public CANSparkMax motorArm2 = new CANSparkMax(12, MotorType.kBrushless);
+
     public double armP = 0.4;
     public double armI = 0.00;
     public double armD = 0.00;
 
-    public double encoderArmTicks = motorArm.getSelectedSensorPosition();
-    public double encoderArmRadians = (encoderArmTicks / 35000 * 3.14);
-    public double powerArm = 0;
+    public double voltsArm = 0;
+
+    public float offset = 0;
 
     public PIDController pidArm = new PIDController(armP, armI, armD);
 
-    public double idlePowerArm = 0.18;
+    public double idlePowerArm = 2.25;
     public double setPointArm = 0;
 
     public Arm() {
 
-        motorArm.setNeutralMode(NeutralMode.Brake);
         SmartDashboard.putNumber("arm p", armP);
         SmartDashboard.putNumber("arm i", armI);
         SmartDashboard.putNumber("arm d", armD);
@@ -37,20 +42,42 @@ public class Arm {
         PIDController pidArm = new PIDController(armP, armI, armD);
     }
 
-    public void Update(double VertStick) {
-        encoderArmTicks = motorArm.getSelectedSensorPosition();
-        encoderArmRadians = (encoderArmTicks / 35000 * 3.14);
-        //System.out.println(pidArm.calculate(encoderArmRadians, setPointArm));
-        // powerArm = idlePowerArm * Math.cos(encoderArmRadians) +
-        // pidArm.calculate(encoderArmRadians,setPointArm);
-        powerArm = idlePowerArm * Math.cos(encoderArmRadians) + VertStick;
+    public void OffsetGravity(boolean cone, boolean extended){
+        if (cone){
+            if(extended){
+                idlePowerArm = 3;
+            }else{
+                idlePowerArm = 4;
+            }
+        }else{
+            if(extended){
+                idlePowerArm = 2.25;
+            }else{
+                idlePowerArm = 2;
+            }
+        }
+    }
 
-        motorArm.set(ControlMode.PercentOutput, powerArm * 10 / RobotController.getBatteryVoltage());
-        //System.out.println(setPointArm);
+    public void Update(double VertStick) {
+        
+        // motorArmRetraction.set(VertStick);
+        RelativeEncoder encoderArmRevolutions = motorArm1.getEncoder();
+        float encoderArmRadians = (float) (encoderArmRevolutions.getPosition() *Math.PI / 12) - offset;
+
+        // pidArm.calculate(encoderArmRadians,setPointArm);
+        voltsArm = 10*VertStick;
+        // voltsArm = idlePowerArm * Math.cos(encoderArmRadians) + VertStick;
+
+        motorArm1.setVoltage(voltsArm);
+        motorArm2.setVoltage(voltsArm);
+        System.out.println(voltsArm+ " powerV");
+
+        // System.out.println(setPointArm);
     }
 
     public void debug() {
-        //System.out.println(setPointArm + " setpoint arm and arm pos " + encoderArmRadians / 3.14 + " and arm power out " + powerArm);
+        // System.out.println(setPointArm + " setpoint arm and arm pos " +
+        // encoderArmRadians / 3.14 + " and arm power out " + powerArm);
     }
 
     public void SetPoint(double setPointArm) {
@@ -58,11 +85,11 @@ public class Arm {
     }
 
     public void ResetEncoder() {
-        motorArm.setSelectedSensorPosition(0);
+        // motorArm.setSelectedSensorPosition(0);
     }
 
-    public void PowerManual(double powerArm) {
-        motorArm.set(ControlMode.PercentOutput, powerArm);
+    public void PowerManual(double voltsArm) {
+        // motorArm.set(ControlMode.PercentOutput, powerArm);
     }
 
     // Arm Control

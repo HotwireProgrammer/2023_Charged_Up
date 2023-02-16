@@ -17,12 +17,12 @@ public class DriveTrain {
 	// public AHRS navx;
 
 	public DriveTrain(int pwm1, int pwm2, int pwm3, int pwm4) {
-		joshmotorcontrollorLeftBottomOne = new JoshMotorControllor(pwm1, lerpSpeed, true);
-		joshmotorcontrollorLeftBottomTwo = new JoshMotorControllor(pwm2, lerpSpeed, true);
+		joshmotorcontrollorLeftBottomOne = new JoshMotorControllor(pwm1, lerpSpeed, false);
+		joshmotorcontrollorLeftBottomTwo = new JoshMotorControllor(pwm2, lerpSpeed, false);
 		// right bottom one
 
-		joshmotorcontrollorRightBottomOne = new JoshMotorControllor(pwm3, lerpSpeed, true);
-		joshmotorcontrollorRightBottomTwo = new JoshMotorControllor(pwm4, lerpSpeed, true);
+		joshmotorcontrollorRightBottomOne = new JoshMotorControllor(pwm3, lerpSpeed, false);
+		joshmotorcontrollorRightBottomTwo = new JoshMotorControllor(pwm4, lerpSpeed, false);
 
 		int limit = 240;
 		int threshold = 240;

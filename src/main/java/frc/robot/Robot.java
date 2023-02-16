@@ -63,19 +63,27 @@ public class Robot extends TimedRobot {
 	public AHRS sensorNavx = new AHRS();
 
 	// Drive train
-	public DriveTrain driveTrain = new DriveTrain(0, 1, 2, 3);
-	// public TalonSRX frontLeft = new TalonSRX(54);
-	// public TalonSRX backLeft = new TalonSRX(55);
-	// public TalonSRX frontRight = new TalonSRX(56);
-	// public TalonSRX backRight = new TalonSRX(57);
+	public DriveTrain driveTrain = new DriveTrain(1, 2, 3, 4);
+	// public TalonSRX frontLeft = new TalonSRX(1);
+	// public TalonSRX backLeft = new TalonSRX(2);
+	// public TalonSRX frontRight = new TalonSRX(3);
+	// public TalonSRX backRight = new TalonSRX(4);
 
 	// Logic
 	public float pwrm = 1;
 	public double setPointArm = 0;
 
+
+	//ArmLogic
+	public boolean cone = false;
+
 	// Robot Components
 	public Gripper gripper;
 	public Arm arm = new Arm();
+
+    public CANSparkMax arm1 = new CANSparkMax(21, MotorType.kBrushless);
+    public CANSparkMax arm2 = new CANSparkMax(22, MotorType.kBrushless);
+	
 
 	// Joysticks
 	// public Joystick driver;
@@ -248,9 +256,11 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
+		arm.OffsetGravity(cone, false);
 		System.out.println(sensorNavx.getRoll());
 
 		gripper.teleopPeriodic();
+		
 
 		{
 			float speed = 1.0f;
@@ -261,6 +271,7 @@ public class Robot extends TimedRobot {
 				setPointArm = setPointArm - 0.1;
 			}
 			arm.SetPoint(setPointArm);
+			System.out.println(operator.getRawAxis(1));
 			arm.Update(operator.getRawAxis(1));
 			arm.debug();
 			if (operator.getRawButton(2)) {
@@ -349,6 +360,11 @@ public class Robot extends TimedRobot {
 	// DigitalInput beamTest = new DigitalInput(1);
 
 	public void testPeriodic() {
+		// frontLeft.set(ControlMode.PercentOutput, 0.2);
+		driveTrain.SetBothSpeed(0.0f);
+		double powerArmTesting = 0.0f;
+		arm1.set(powerArmTesting);
+		arm2.set(powerArmTesting);
 
 		arm.PowerManual(0);
 		arm.ResetEncoder();
@@ -421,7 +437,7 @@ public class Robot extends TimedRobot {
 		 * // testTurn.Update();
 		 */
 		// System.out.println(frontLeft.getSelectedSensorPosition());
-		driveTrain.SetBothSpeed(0);
+		// driveTrain.SetBothSpeed(0);
 		driveTrain.SetCoast();
 		driveTrain.Update();
 		UpdateMotors();

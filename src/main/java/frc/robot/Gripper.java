@@ -8,11 +8,12 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Gripper {
 
-    public CANSparkMax motorGripper = new CANSparkMax(5, MotorType.kBrushless);
+    public CANSparkMax motorGripper = new CANSparkMax(14, MotorType.kBrushless);
 
     private Robot robot;
 
     private boolean close = false;
+    private double closingForce = 0;
     private boolean doClose = false;
 
     public Gripper(Robot robot) {
@@ -27,17 +28,26 @@ public class Gripper {
 
     public void teleopPeriodic() {
 
+
         if (robot.operator.getRawButtonPressed(7)) {
             close = true;
+            closingForce = 0.2;
+        
+        }
+        if (robot.operator.getRawButtonPressed(8)) {
+            close = true;
+            closingForce = 0.5;
+            robot.cone = true;
         }
 
         if (close) {
-            motorGripper.set(-0.2);
+            motorGripper.set(closingForce);
         }
 
-        if (robot.operator.getRawButton(8)) {
+        if (robot.operator.getRawButton(2)) {
+            robot.cone = false;
             close = false;
-            motorGripper.set(0.5);
+            motorGripper.set(-0.2);
         } else if (close == false) {
             motorGripper.set(0.0);
         }
