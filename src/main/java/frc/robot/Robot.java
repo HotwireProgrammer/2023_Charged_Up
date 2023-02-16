@@ -164,14 +164,14 @@ public class Robot extends TimedRobot {
 		firstAuto = new LinkedList<AutoStep>();
 
 		firstAuto.add(new NavxReset(sensorNavx));
+		firstAuto.add(new GripperStep(gripper, true));
+		firstAuto.add(new ArmMove(arm, 1.5f, 0.1f, operator));
+		firstAuto.add(new GripperStep(gripper, false));
+		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
+		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));
 		firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
 		firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
-		// firstAuto.add(new GripperStep(gripper, true));
-		// firstAuto.add(new ArmMove(arm, 1.5f, 0.1f));
-		// firstAuto.add(new GripperStep(gripper, false));
-		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
-		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 
 		autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
@@ -272,7 +272,7 @@ public class Robot extends TimedRobot {
 			}
 			arm.SetPoint(setPointArm);
 			System.out.println(operator.getRawAxis(1));
-			arm.Update(operator.getRawAxis(1));
+			arm.Update(operator.getRawAxis(1), operator);
 			arm.debug();
 			if (operator.getRawButton(2)) {
 				arm.PowerManual(0);

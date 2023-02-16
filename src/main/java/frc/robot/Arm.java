@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -42,35 +43,44 @@ public class Arm {
         PIDController pidArm = new PIDController(armP, armI, armD);
     }
 
-    public void OffsetGravity(boolean cone, boolean extended){
-        if (cone){
-            if(extended){
+    public void OffsetGravity(boolean cone, boolean extended) {
+        if (cone) {
+            if (extended) {
                 idlePowerArm = 3;
-            }else{
+            } else {
                 idlePowerArm = 4;
             }
-        }else{
-            if(extended){
+        } else {
+            if (extended) {
                 idlePowerArm = 2.25;
-            }else{
+            } else {
                 idlePowerArm = 2;
             }
         }
     }
 
-    public void Update(double VertStick) {
-        
+    public void Update(double VertStick, Joystick operator) {
+
         // motorArmRetraction.set(VertStick);
         RelativeEncoder encoderArmRevolutions = motorArm1.getEncoder();
-        float encoderArmRadians = (float) (encoderArmRevolutions.getPosition() *Math.PI / 12) - offset;
+        float encoderArmRadians = (float) (encoderArmRevolutions.getPosition() * Math.PI / 12) - offset;
 
         // pidArm.calculate(encoderArmRadians,setPointArm);
-        voltsArm = 10*VertStick;
+        voltsArm = 10 * VertStick;
         // voltsArm = idlePowerArm * Math.cos(encoderArmRadians) + VertStick;
 
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
-        System.out.println(voltsArm+ " powerV");
+        System.out.println(voltsArm + " powerV");
+
+        //arm retract and extend
+        if (operator.getRawButton(4)) {
+            motorArmRetraction.set(0.3);
+        } else if (operator.getRawButton(1)) {
+            motorArmRetraction.set(-0.3);
+        } else {
+            motorArmRetraction.set(0.05);
+        }
 
         // System.out.println(setPointArm);
     }
