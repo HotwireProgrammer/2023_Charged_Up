@@ -5,6 +5,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Gripper {
 
@@ -12,6 +13,7 @@ public class Gripper {
 
     private Robot robot;
 
+    private Timer timer = new Timer();
     private boolean close = false;
     private double closingForce = 0;
     private boolean doClose = false;
@@ -27,14 +29,14 @@ public class Gripper {
     }
 
     public void teleopPeriodic() {
+        timer.start();
 
-
-        if (robot.operator.getRawButtonPressed(7)) {
+        if (robot.operator.getRawButtonPressed(5)) {
             close = true;
             closingForce = 0.2;
         
         }
-        if (robot.operator.getRawButtonPressed(8)) {
+        if (robot.operator.getRawButtonPressed(7)) {
             close = true;
             closingForce = 0.5;
             robot.cone = true;
@@ -45,10 +47,11 @@ public class Gripper {
         }
 
         if (robot.operator.getRawButton(2)) {
+            timer.reset();
             robot.cone = false;
             close = false;
             motorGripper.set(-0.2);
-        } else if (close == false) {
+        } else if (timer.get() > 1 && close == false) {
             motorGripper.set(0.0);
         }
     }

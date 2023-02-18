@@ -116,6 +116,7 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
+		arm.ResetEncoder();
 		SmartDashboard.putNumber("Ballcount", 0);
 		SmartDashboard.putBoolean("TwoBall", false);
 		SmartDashboard.putBoolean("FourBallBlue", false);
@@ -170,8 +171,8 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
 		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));
-		firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
-		firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
+		// firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
+		// firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
 
 		autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
@@ -257,7 +258,7 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 
 		arm.OffsetGravity(cone, false);
-		System.out.println(sensorNavx.getRoll());
+		// System.out.println(sensorNavx.getRoll());
 
 		gripper.teleopPeriodic();
 		
@@ -271,7 +272,7 @@ public class Robot extends TimedRobot {
 				setPointArm = setPointArm - 0.1;
 			}
 			arm.SetPoint(setPointArm);
-			System.out.println(operator.getRawAxis(1));
+			// System.out.println(operator.getRawAxis(1));
 			arm.Update(operator.getRawAxis(1), operator);
 			arm.debug();
 			if (operator.getRawButton(2)) {
@@ -331,7 +332,7 @@ public class Robot extends TimedRobot {
 		flightStickRight = new Joystick(2);
 	}
 
-	public float Lerp(float v0, float v1, float t) {
+	public static float Lerp(float v0, float v1, float t) {
 
 		if (t < 0) {
 			t = 0;
