@@ -273,7 +273,7 @@ public class Robot extends TimedRobot {
 			}
 			arm.SetPoint(setPointArm);
 			// System.out.println(operator.getRawAxis(1));
-			arm.Update(operator.getRawAxis(1), operator);
+			arm.Update(operator.getRawAxis(3), operator);
 			arm.debug();
 			if (operator.getRawButton(2)) {
 				arm.PowerManual(0);
