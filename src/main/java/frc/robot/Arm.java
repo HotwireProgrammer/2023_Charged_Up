@@ -67,7 +67,7 @@ public class Arm {
     }
 
     public void Update(double VertStick, Joystick operator) {
-        idlePowerArm = Robot.Lerp(0.91f, 2.03f, (float) (encoderArmDistance.getPosition() / -61.0f));
+        idlePowerArm = Robot.Lerp(0.91f, 2.03f, (float) (encoderArmDistance.getPosition() / 61.0f));
 
         System.out.println(encoderArmDistance.getPosition());
 
@@ -81,12 +81,11 @@ public class Arm {
         // voltsArm = 10 * VertStick;
         voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 2 * VertStick;
         if (operator.getRawButton(9)) {
-            voltsArm = 5 * VertStick;
+            voltsArm = 7.5 * VertStick;
         }
 
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
-
 
         System.out.println(voltsArm + " powerV");
         // System.out.println(encoderArmRadians + " radians");
@@ -97,21 +96,24 @@ public class Arm {
         // arm retract and extend
         if (operator.getPOV() == -1) {
             if (!extended) {
-                motorArmRetraction.setVoltage(0.8f);
+                motorArmRetraction.setVoltage(-0.8f);
             } else {
                 motorArmRetraction.set(0);
             }
         } else if (operator.getPOV() > 310 || operator.getPOV() < 50) {
 
-            if (encoderArmDistance.getPosition() > -61) {
-                motorArmRetraction.set(-0.3);
+            if (encoderArmDistance.getPosition() < 60) {
+                motorArmRetraction.set(0.6f);
             } else {
                 motorArmRetraction.set(0.0f);
             }
             extended = true;
         } else if (130 < operator.getPOV() && operator.getPOV() < 230) {
-            motorArmRetraction.set(0.3);
-
+            if (encoderArmDistance.getPosition() > 5) {
+                motorArmRetraction.set(-0.6f);
+            } else {
+                motorArmRetraction.set(-0.2f);
+            }
         }
 
         // System.out.println(setPointArm);
@@ -135,6 +137,10 @@ public class Arm {
 
     public void PowerManual(double voltsArm) {
         // motorArm.set(ControlMode.PercentOutput, powerArm);
+    }
+
+    public void Extend(double power) {
+        motorArmRetraction.set(power);
     }
 
     // Arm Control

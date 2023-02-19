@@ -33,7 +33,7 @@ public class Gripper {
 
         if (robot.operator.getRawButtonPressed(5)) {
             close = true;
-            closingForce = 0.2;
+            closingForce = 0.3;
         
         }
         if (robot.operator.getRawButtonPressed(7)) {
@@ -46,7 +46,7 @@ public class Gripper {
             motorGripper.set(closingForce);
         }
 
-        if (robot.operator.getRawButton(2)) {
+        if (robot.operator.getRawButton(2)|| robot.flightStickLeft.getRawButton(1)) {
             timer.reset();
             robot.cone = false;
             close = false;

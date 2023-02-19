@@ -165,6 +165,7 @@ public class Robot extends TimedRobot {
 		firstAuto = new LinkedList<AutoStep>();
 
 		firstAuto.add(new NavxReset(sensorNavx));
+		firstAuto.add(new ArmRetract(arm, 0.1f, 0.3f));
 		firstAuto.add(new GripperStep(gripper, true));
 		firstAuto.add(new ArmMove(arm, 1.5f, 0.1f, operator));
 		firstAuto.add(new GripperStep(gripper, false));
@@ -257,6 +258,10 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
+		if(operator.getRawButton(10)){
+			arm.ResetEncoder();
+		}
+
 		arm.OffsetGravity(cone, false);
 		// System.out.println(sensorNavx.getRoll());
 
@@ -307,7 +312,7 @@ public class Robot extends TimedRobot {
 			// ControllerDrive();
 		}
 
-		if (flightStickLeft.getRawButton(2)) {
+		if (flightStickRight.getRawButton(1)) {
 			// auto balance
 
 			float error = sensorNavx.getRoll();
@@ -361,6 +366,8 @@ public class Robot extends TimedRobot {
 	// DigitalInput beamTest = new DigitalInput(1);
 
 	public void testPeriodic() {
+
+
 		// frontLeft.set(ControlMode.PercentOutput, 0.2);
 		driveTrain.SetBothSpeed(0.0f);
 		double powerArmTesting = 0.0f;
@@ -468,8 +475,11 @@ public class Robot extends TimedRobot {
 			// driveTrain.SetRightSpeed((-rightJoystick));
 			// driveTrain.SetLeftSpeed((-leftJoystick));
 
-			float leftJoystick = DriveScaleSelector((float) -flightStickLeft.getRawAxis(1), DriveScale.linear);
+			float leftJoystick = DriveScaleSelector((float) flightStickLeft.getRawAxis(1), DriveScale.linear);
 			float rightJoystick = (DriveScaleSelector((float) flightStickRight.getRawAxis(0), DriveScale.linear));
+			float expo =0.2f;
+			rightJoystick = (float)(expo*Math.pow(rightJoystick, 3) + (1-expo) *rightJoystick);
+			System.out.println(rightJoystick+ " right joystick");
 
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);
 			driveTrain.SetLeftSpeed(-leftJoystick + rightJoystick);
