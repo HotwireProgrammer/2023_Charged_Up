@@ -207,7 +207,6 @@ public class Robot extends TimedRobot {
 
 		sensorNavx.reset();
 
-		// navx.reset();
 		limelight.SetLight(false);
 
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(0);
@@ -258,12 +257,13 @@ public class Robot extends TimedRobot {
 
 	public void teleopPeriodic() {
 
+		// System.out.println(sensorNavx.getPitch());
+
 		if(operator.getRawButton(10)){
 			arm.ResetEncoder();
 		}
 
 		arm.OffsetGravity(cone, false);
-		// System.out.println(sensorNavx.getRoll());
 
 		gripper.teleopPeriodic();
 		
@@ -315,7 +315,7 @@ public class Robot extends TimedRobot {
 		if (flightStickRight.getRawButton(1)) {
 			// auto balance
 
-			float error = sensorNavx.getRoll();
+			float error = -sensorNavx.getPitch();
 			double output = pidAutoBalance.Calculate(error);
 			driveTrain.SetBothSpeed((float)output);
 		} else {
@@ -479,7 +479,7 @@ public class Robot extends TimedRobot {
 			float rightJoystick = (DriveScaleSelector((float) flightStickRight.getRawAxis(0), DriveScale.linear));
 			float expo =0.2f;
 			rightJoystick = (float)(expo*Math.pow(rightJoystick, 3) + (1-expo) *rightJoystick);
-			System.out.println(rightJoystick+ " right joystick");
+			// System.out.println(rightJoystick+ " right joystick");
 
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);
 			driveTrain.SetLeftSpeed(-leftJoystick + rightJoystick);

@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.Timer;
 public class Gripper {
 
     public CANSparkMax motorGripper = new CANSparkMax(14, MotorType.kBrushless);
+    public CANSparkMax motorRotationGripper = new CANSparkMax(15, MotorType.kBrushless);
+
+
 
     private Robot robot;
 
@@ -30,6 +33,8 @@ public class Gripper {
 
     public void teleopPeriodic() {
         timer.start();
+
+        motorRotationGripper.set(robot.operator.getRawAxis(0)/2.0f);;
 
         if (robot.operator.getRawButtonPressed(5)) {
             close = true;

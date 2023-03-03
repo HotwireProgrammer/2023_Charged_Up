@@ -69,7 +69,7 @@ public class Arm {
     public void Update(double VertStick, Joystick operator) {
         idlePowerArm = Robot.Lerp(0.91f, 2.03f, (float) (encoderArmDistance.getPosition() / 61.0f));
 
-        System.out.println(encoderArmDistance.getPosition());
+        // System.out.println(encoderArmDistance.getPosition());
 
         // motorArmRetraction.set(VertStick);
 
@@ -79,7 +79,8 @@ public class Arm {
 
         // pidArm.calculate(encoderArmRadians,setPointArm);
         // voltsArm = 10 * VertStick;
-        voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 2 * VertStick;
+        voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 10 * VertStick;
+        System.out.println(voltsArm+ "volts arm");
         if (operator.getRawButton(9)) {
             voltsArm = 7.5 * VertStick;
         }
@@ -87,7 +88,7 @@ public class Arm {
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
 
-        System.out.println(voltsArm + " powerV");
+        // System.out.println(voltsArm + " powerV");
         // System.out.println(encoderArmRadians + " radians");
         // System.out.println((encoderArmRevolutions.getPosition()-offset + 0.5) +
         // "math");
@@ -96,23 +97,23 @@ public class Arm {
         // arm retract and extend
         if (operator.getPOV() == -1) {
             if (!extended) {
-                motorArmRetraction.setVoltage(-0.8f);
+                motorArmRetraction.setVoltage(0.8f);
             } else {
                 motorArmRetraction.set(0);
             }
         } else if (operator.getPOV() > 310 || operator.getPOV() < 50) {
 
             if (encoderArmDistance.getPosition() < 60) {
-                motorArmRetraction.set(0.6f);
+                motorArmRetraction.set(-0.6f);
             } else {
                 motorArmRetraction.set(0.0f);
             }
             extended = true;
         } else if (130 < operator.getPOV() && operator.getPOV() < 230) {
             if (encoderArmDistance.getPosition() > 5) {
-                motorArmRetraction.set(-0.6f);
+                motorArmRetraction.set(0.6f);
             } else {
-                motorArmRetraction.set(-0.2f);
+                motorArmRetraction.set(0.2f);
             }
         }
 
