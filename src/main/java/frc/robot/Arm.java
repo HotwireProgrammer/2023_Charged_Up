@@ -67,9 +67,10 @@ public class Arm {
     }
 
     public void Update(double VertStick, Joystick operator) {
-        idlePowerArm = Robot.Lerp(0.91f, 2.03f, (float) (encoderArmDistance.getPosition() / 61.0f));
+        idlePowerArm = Robot.Lerp(1.0f, 3.0f, (float) (Math.abs(encoderArmDistance.getPosition()) / 77.0f));
 
-        // System.out.println(encoderArmDistance.getPosition());
+        //System.out.println("encoder arm - " + encoderArmDistance.getPosition());
+        //System.out.println("idle power - " + idlePowerArm);
 
         // motorArmRetraction.set(VertStick);
 
@@ -79,14 +80,18 @@ public class Arm {
 
         // pidArm.calculate(encoderArmRadians,setPointArm);
         // voltsArm = 10 * VertStick;
-        voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 10 * VertStick;
-        System.out.println(voltsArm+ "volts arm");
+        voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
+        //System.out.println(voltsArm + "volts arm");
+        
         if (operator.getRawButton(9)) {
-            voltsArm = 7.5 * VertStick;
+            //voltsArm = 7.5 * VertStick;
         }
+
+        System.out.println("volts arm " + voltsArm);
 
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
+
 
         // System.out.println(voltsArm + " powerV");
         // System.out.println(encoderArmRadians + " radians");
@@ -95,6 +100,8 @@ public class Arm {
         // System.out.println(offset + "offset");
 
         // arm retract and extend
+
+        System.out.println(encoderArmDistance.getPosition()+" pos");
         if (operator.getPOV() == -1) {
             if (!extended) {
                 motorArmRetraction.setVoltage(0.8f);
@@ -103,14 +110,14 @@ public class Arm {
             }
         } else if (operator.getPOV() > 310 || operator.getPOV() < 50) {
 
-            if (encoderArmDistance.getPosition() < 60) {
+            if (encoderArmDistance.getPosition() > -52) {
                 motorArmRetraction.set(-0.6f);
             } else {
                 motorArmRetraction.set(0.0f);
             }
             extended = true;
         } else if (130 < operator.getPOV() && operator.getPOV() < 230) {
-            if (encoderArmDistance.getPosition() > 5) {
+            if (encoderArmDistance.getPosition() < -5) {
                 motorArmRetraction.set(0.6f);
             } else {
                 motorArmRetraction.set(0.2f);
@@ -131,13 +138,12 @@ public class Arm {
 
     public void ResetEncoder() {
         encoderArmDistance.setPosition(0.0f);
-
         offset = (float) encoderArmRevolutions.getPosition();
-
     }
 
     public void PowerManual(double voltsArm) {
-        // motorArm.set(ControlMode.PercentOutput, powerArm);
+        motorArm1.setVoltage(voltsArm);
+        motorArm2.setVoltage(voltsArm);
     }
 
     public void Extend(double power) {

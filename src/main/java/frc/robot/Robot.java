@@ -80,9 +80,6 @@ public class Robot extends TimedRobot {
 	// Robot Components
 	public Gripper gripper;
 	public Arm arm = new Arm();
-
-    public CANSparkMax arm1 = new CANSparkMax(21, MotorType.kBrushless);
-    public CANSparkMax arm2 = new CANSparkMax(22, MotorType.kBrushless);
 	
 
 	// Joysticks
@@ -153,6 +150,8 @@ public class Robot extends TimedRobot {
 		currentAutoStep = 0;
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(1);
 
+		operator = new Joystick(1);
+
 		driveTrain.SetBreak();
 		limelight.SetLight(true);
 
@@ -167,11 +166,13 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new NavxReset(sensorNavx));
 		firstAuto.add(new ArmRetract(arm, 0.1f, 0.3f));
 		firstAuto.add(new GripperStep(gripper, true));
-		firstAuto.add(new ArmMove(arm, 1.5f, 0.1f, operator));
+		firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
 		firstAuto.add(new GripperStep(gripper, false));
-		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
 		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
+		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
+		firstAuto.add(new ArmMove(arm, 1.0f, 0.1f, operator));
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));
+
 		// firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
 		// firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
 
@@ -280,7 +281,7 @@ public class Robot extends TimedRobot {
 			// System.out.println(operator.getRawAxis(1));
 			arm.Update(operator.getRawAxis(3), operator);
 			arm.debug();
-			if (operator.getRawButton(2)) {
+			if (operator.getRawButton(9)) {
 				arm.PowerManual(0);
 			}
 			driveTrain.SetCoast();
@@ -367,85 +368,12 @@ public class Robot extends TimedRobot {
 
 	public void testPeriodic() {
 
-
-		// frontLeft.set(ControlMode.PercentOutput, 0.2);
-		driveTrain.SetBothSpeed(0.0f);
-		double powerArmTesting = 0.0f;
-		arm1.set(powerArmTesting);
-		arm2.set(powerArmTesting);
-
-		arm.PowerManual(0);
+		double volts = operator.getRawAxis(0) * 5.0;
+		System.out.println(volts);
+		arm.PowerManual(volts);
 		arm.ResetEncoder();
 
-		/*
-		 * Ultrasonic.setAutomaticMode(true);
-		 * double ultraInches = sensorUltrasonic.getRangeInches();
-		 * System.out.println(ultraInches);
-		 * float error = (float) (ultraInches - 50);
-		 * float p = 0.03f;
-		 * 
-		 * float power = (float) -(error * p);
-		 * 
-		 * if (Math.abs(power) > 0.3f) {
-		 * power = (power/Math.abs(power))*0.3f;
-		 * }
-		 * System.out.println(power);
-		 * driveTrain.SetBothSpeed(power);
-		 */
-
-		/*
-		 * if(beamTest.get()){
-		 * if (flightStickLeft.getRawButton(2)) {
-		 * intakeSeven.set(ControlMode.PercentOutput, 0.5f);
-		 * } else if(flightStickLeft.getRawButton(1)) {
-		 * intakeSeven.set(ControlMode.PercentOutput, -0.5f);
-		 * } else {
-		 * intakeSeven.set(ControlMode.PercentOutput, 0f);
-		 * }
-		 * 
-		 * }
-		 * else {
-		 * intakeSeven.set(ControlMode.PercentOutput, 0f);
-		 * }
-		 */
-
-		/*
-		 * frontLeft.getSelectedSensorPosition();
-		 * 
-		 * 
-		 * preShooterFive.set(ControlMode.PercentOutput, (preShooterFeed.calculate(15,
-		 * 100)/RobotController.getBatteryVoltage()));
-		 * 
-		 * 
-		 * // System.out.println(preShooterFive.getSelectedSensorVelocity()/2048*8.19 +
-		 * "Calc");
-		 * // System.out.println(preShooterFive.getSelectedSensorVelocity()/2048*600 +
-		 * "RPM");
-		 * // preShooterFive.set(ControlMode.PercentOutput, 0);
-		 * SmartDashboard.putNumber("Shooter Rot Target", 0);
-		 * 
-		 * shooter.PowerManual(0);
-		 * System.out.println(frontLeft.getSelectedSensorPosition());
-		 * 
-		 * 
-		 * driveTrain.SetBothSpeed(0);
-		 * 
-		 * driveTrain.SetCoast();
-		 * climber.coastMode();
-		 * 
-		 * // forTesting.set(ControlMode.PercentOutput, 0.5f);
-		 * // limelight.SetLight(true);
-		 * 
-		 * if (flightStickLeft.getRawButtonPressed(0)) {
-		 * // navxTarget
-		 * navx.reset();
-		 * testTurn = new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID);
-		 * }
-		 * 
-		 * // testTurn.Update();
-		 */
-		// System.out.println(frontLeft.getSelectedSensorPosition());
-		// driveTrain.SetBothSpeed(0);
+		driveTrain.SetBothSpeed(0.0f);
 		driveTrain.SetCoast();
 		driveTrain.Update();
 		UpdateMotors();

@@ -24,14 +24,14 @@ public class NavxDriveUntil extends AutoStep {
     }
 
     public void Update() {
-        System.out.println(navx.getRoll());
+        System.out.println(navx.getPitch());
 
         drivetrain.SetBothSpeed(speed);
 
-        if (navx.getRoll() < -10) {
+        if (navx.getPitch() > 10) {
             didClimb = true;
         }
-        if (didClimb && navx.getRoll() > -3) {
+        if (didClimb && navx.getPitch() < 3) {
             isDone = true;
             drivetrain.SetBothSpeed(0);
 

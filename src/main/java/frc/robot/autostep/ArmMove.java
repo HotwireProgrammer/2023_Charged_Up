@@ -18,6 +18,7 @@ public class ArmMove extends AutoStep {
         this.time = time;
         this.speed = speed;
         this.arm = arm;
+        this.operator = operator;
         armTimer = new Timer();
     }
 
