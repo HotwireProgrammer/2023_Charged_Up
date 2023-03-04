@@ -5,18 +5,18 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.DriveTrain;
 import frc.robot.Arm;
 
-public class ArmRetract extends AutoStep {
+public class ArmPushPull extends AutoStep {
 
     public Timer armTimer;
     public float time;
-    public float speed;
     public Arm arm;
+    public boolean retract;
 
-    public ArmRetract(Arm arm, float time, float speed) {
+    public ArmPushPull(Arm arm, float time, boolean retract) {
         super();
         this.time = time;
-        this.speed = speed;
         this.arm = arm;
+        this.retract = retract;
         armTimer = new Timer();
     }
 
@@ -26,10 +26,9 @@ public class ArmRetract extends AutoStep {
     }
 
     public void Update() {
-        arm.Extend(speed);
+        arm.Extend(retract);
         if (armTimer.get() > time) {
             isDone = true;
-            arm.Extend(0);
         }
     }
 }

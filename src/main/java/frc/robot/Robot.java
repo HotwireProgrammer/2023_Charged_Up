@@ -164,14 +164,22 @@ public class Robot extends TimedRobot {
 		firstAuto = new LinkedList<AutoStep>();
 
 		firstAuto.add(new NavxReset(sensorNavx));
-		firstAuto.add(new ArmRetract(arm, 0.1f, 0.3f));
 		firstAuto.add(new GripperStep(gripper, true));
-		firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
-		firstAuto.add(new GripperStep(gripper, false));
-		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
-		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
-		firstAuto.add(new ArmMove(arm, 1.0f, 0.1f, operator));
-		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));
+		// firstAuto.add(new ArmZero(arm));
+		// firstAuto.add(new ArmPushPull(arm, 0.5f, true));
+		// firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
+		
+		
+		// firstAuto.add(new ArmPushPull(arm, 0.5f, false));
+		// firstAuto.add(new TimedForward(driveTrain, 0.5f, 0.1f));
+
+		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
+		// firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
+
+		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
+
+		// firstAuto.add(new ArmMove(arm, 1.0f, 0.1f, operator));
+		// firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));hhbg
 
 		// firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
 		// firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
@@ -182,6 +190,8 @@ public class Robot extends TimedRobot {
 
 	public void autonomousPeriodic() {
 		SmartDashboard.putBoolean("RobotEnabled", true);
+
+		arm.AutoUpdate();
 		gripper.AutoPeriodic();
 
 		// autonomous loop
@@ -277,7 +287,6 @@ public class Robot extends TimedRobot {
 			} else if (flightStickRight.getRawButtonPressed(1)) {
 				setPointArm = setPointArm - 0.1;
 			}
-			arm.SetPoint(setPointArm);
 			// System.out.println(operator.getRawAxis(1));
 			arm.Update(operator.getRawAxis(3), operator);
 			arm.debug();

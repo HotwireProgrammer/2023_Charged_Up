@@ -24,7 +24,7 @@ public class Arm {
     public RelativeEncoder encoderArmRevolutions = motorArm1.getEncoder();
     public RelativeEncoder encoderArmDistance = motorArmRetraction.getEncoder();
 
-    public double armP = 0.4;
+    public double armP = 1.0f;
     public double armI = 0.00;
     public double armD = 0.00;
 
@@ -35,9 +35,16 @@ public class Arm {
     private float offset = 0;
     // 61 distance
     public PIDController pidArm = new PIDController(armP, armI, armD);
+
     // 1.36
     public double idlePowerArm = 2.03;
-    public double setPointArm = 0;
+    public double setPointArm = 3.14f / 2.0f;
+
+    public boolean autoDoExtend = false;
+    public boolean autoExtend = false;
+
+    public int extendEncoderOut = -45;
+    public int extendEncoderIn = -5;
 
     public Arm() {
 
@@ -67,10 +74,15 @@ public class Arm {
     }
 
     public void Update(double VertStick, Joystick operator) {
-        idlePowerArm = Robot.Lerp(1.0f, 3.0f, (float) (Math.abs(encoderArmDistance.getPosition()) / 77.0f));
 
-        // System.out.println("encoder arm - " + encoderArmDistance.getPosition());
-        // System.out.println("idle power - " + idlePowerArm);
+        setPointArm = setPointArm + VertStick / 100.0f;
+        if (setPointArm < 3.14f / 4.0f) {
+            setPointArm = 3.14f / 4.0f;
+        } else if (setPointArm > 3.14f * 3.0f / 4.0f) {
+            setPointArm = 3.14f * 3.0f / 4.0f;
+        }
+
+        idlePowerArm = Robot.Lerp(1.0f, 3.0f, (float) (Math.abs(encoderArmDistance.getPosition()) / 77.0f));
 
         // motorArmRetraction.set(VertStick);
 
@@ -78,16 +90,18 @@ public class Arm {
         float encoderArmRadians = (float) ((encoderArmRevolutions.getPosition() - offset) * 2.0f * 3.14f / 24.0f
                 + 3.14f / 2.0f);
 
-        // pidArm.calculate(encoderArmRadians,setPointArm);
         // voltsArm = 10 * VertStick;
-        voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
-        // System.out.println(voltsArm + "volts arm");
+
+         voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
+
+        System.out.println(-pidArm.calculate(encoderArmRadians, setPointArm) + " pid");
+        System.out.println(setPointArm/3.14f + " setpoint");
+
+        //voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) - pidArm.calculate(encoderArmRadians, setPointArm/3.14f);
 
         if (operator.getRawButton(9)) {
             // voltsArm = 7.5 * VertStick;
         }
-
-        System.out.println("volts arm " + voltsArm);
 
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
@@ -100,7 +114,6 @@ public class Arm {
 
         // arm retract and extend
 
-        System.out.println(encoderArmDistance.getPosition() + " pos");
         if (operator.getPOV() == -1) {
             if (!extended) {
                 motorArmRetraction.setVoltage(0.8f);
@@ -109,14 +122,14 @@ public class Arm {
             }
         } else if (operator.getPOV() > 310 || operator.getPOV() < 50) {
 
-            if (encoderArmDistance.getPosition() > -52) {
+            if (encoderArmDistance.getPosition() > extendEncoderOut) {
                 motorArmRetraction.set(-0.6f);
             } else {
                 motorArmRetraction.set(0.0f);
             }
             extended = true;
         } else if (130 < operator.getPOV() && operator.getPOV() < 230) {
-            if (encoderArmDistance.getPosition() < -5) {
+            if (encoderArmDistance.getPosition() < extendEncoderIn) {
                 motorArmRetraction.set(0.6f);
             } else {
                 motorArmRetraction.set(0.2f);
@@ -126,18 +139,42 @@ public class Arm {
         // System.out.println(setPointArm);
     }
 
+    public void AutoUpdate() {
+
+        if (!autoExtend) { return; }
+
+        if (autoDoExtend) {
+            if (encoderArmDistance.getPosition() > extendEncoderOut) {
+                motorArmRetraction.set(-0.6f);
+            } else {
+                motorArmRetraction.set(0f);
+            }
+
+        } else {
+            if (encoderArmDistance.getPosition() < extendEncoderIn) {
+                motorArmRetraction.set(0.6f);
+            } else {
+                motorArmRetraction.set(0.2f);
+            }
+        }
+    }
+
     public void debug() {
         // System.out.println(setPointArm + " setpoint arm and arm pos " +
         // encoderArmRadians / 3.14 + " and arm power out " + powerArm);
     }
 
-    public void SetPoint(double setPointArm) {
-        this.setPointArm = setPointArm;
-    }
+    // public void SetPoint(double setPointArm) {
+    // this.setPointArm = setPointArm;
+    // }
 
     public void ResetEncoder() {
         encoderArmDistance.setPosition(0.0f);
         offset = (float) encoderArmRevolutions.getPosition();
+    }
+
+    public void RetractManual(double speed) {
+        motorArmRetraction.set(speed);
     }
 
     public void PowerManual(double voltsArm) {
@@ -145,8 +182,8 @@ public class Arm {
         motorArm2.setVoltage(voltsArm);
     }
 
-    public void Extend(double power) {
-        motorArmRetraction.set(power);
+    public void Extend(boolean doExtend) {
+        autoDoExtend = doExtend;
     }
 
     // Arm Control

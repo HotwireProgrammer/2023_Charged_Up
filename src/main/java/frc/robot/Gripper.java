@@ -28,7 +28,6 @@ public class Gripper {
         if (doClose) {
             motorGripper.set(0.6f);
         }
-
     }
 
     public void teleopPeriodic() {
