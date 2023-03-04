@@ -69,8 +69,8 @@ public class Arm {
     public void Update(double VertStick, Joystick operator) {
         idlePowerArm = Robot.Lerp(1.0f, 3.0f, (float) (Math.abs(encoderArmDistance.getPosition()) / 77.0f));
 
-        //System.out.println("encoder arm - " + encoderArmDistance.getPosition());
-        //System.out.println("idle power - " + idlePowerArm);
+        // System.out.println("encoder arm - " + encoderArmDistance.getPosition());
+        // System.out.println("idle power - " + idlePowerArm);
 
         // motorArmRetraction.set(VertStick);
 
@@ -81,17 +81,16 @@ public class Arm {
         // pidArm.calculate(encoderArmRadians,setPointArm);
         // voltsArm = 10 * VertStick;
         voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
-        //System.out.println(voltsArm + "volts arm");
-        
+        // System.out.println(voltsArm + "volts arm");
+
         if (operator.getRawButton(9)) {
-            //voltsArm = 7.5 * VertStick;
+            // voltsArm = 7.5 * VertStick;
         }
 
         System.out.println("volts arm " + voltsArm);
 
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
-
 
         // System.out.println(voltsArm + " powerV");
         // System.out.println(encoderArmRadians + " radians");
@@ -101,7 +100,7 @@ public class Arm {
 
         // arm retract and extend
 
-        System.out.println(encoderArmDistance.getPosition()+" pos");
+        System.out.println(encoderArmDistance.getPosition() + " pos");
         if (operator.getPOV() == -1) {
             if (!extended) {
                 motorArmRetraction.setVoltage(0.8f);
