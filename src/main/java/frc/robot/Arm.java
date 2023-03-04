@@ -94,8 +94,8 @@ public class Arm {
 
          voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
 
-        System.out.println(-pidArm.calculate(encoderArmRadians, setPointArm) + " pid");
-        System.out.println(setPointArm/3.14f + " setpoint");
+        // System.out.println(-pidArm.calculate(encoderArmRadians, setPointArm) + " pid");
+        // System.out.println(setPointArm/3.14f + " setpoint");
 
         //voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) - pidArm.calculate(encoderArmRadians, setPointArm/3.14f);
 

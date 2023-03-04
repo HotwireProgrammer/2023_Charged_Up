@@ -164,14 +164,26 @@ public class Robot extends TimedRobot {
 		firstAuto = new LinkedList<AutoStep>();
 
 		firstAuto.add(new NavxReset(sensorNavx));
-		firstAuto.add(new GripperStep(gripper, true));
+		firstAuto.add(new TimedForward(driveTrain, 0.7f, -0.2f));
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 5.0f, 0.2f));
+		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
+		firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
+		firstAuto.add(new Wait(driveTrain, 0.25f));
+		firstAuto.add(new TimedForward(driveTrain, 1.0f, -0.3f));
+		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+
+
+
+		// firstAuto.add(new GripperStep(gripper, true));
 		// firstAuto.add(new ArmZero(arm));
-		// firstAuto.add(new ArmPushPull(arm, 0.5f, true));
-		// firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
+		// firstAuto.add(new ArmPushPull(arm, 0.5f, false));
+		// firstAuto.add(new ArmZero(arm));
+		// firstAuto.add(new ArmMove(arm, 1.5f, -0.2f, operator));
 		
 		
 		// firstAuto.add(new ArmPushPull(arm, 0.5f, false));
-		// firstAuto.add(new TimedForward(driveTrain, 0.5f, 0.1f));
+
+
 
 		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 		// firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
@@ -179,8 +191,6 @@ public class Robot extends TimedRobot {
 		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
 
 		// firstAuto.add(new ArmMove(arm, 1.0f, 0.1f, operator));
-		// firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.4f, driveTrain));hhbg
-
 		// firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
 		// firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
 
@@ -192,6 +202,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("RobotEnabled", true);
 
 		arm.AutoUpdate();
+		arm.Update(0, operator);
 		gripper.AutoPeriodic();
 
 		// autonomous loop
