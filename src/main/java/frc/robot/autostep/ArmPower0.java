@@ -5,32 +5,27 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.DriveTrain;
 import frc.robot.Arm;
 
-public class ArmZero extends AutoStep {
+public class ArmPower0 extends AutoStep {
 
     public Timer armTimer;
     public float time;
     public float speed;
     public Arm arm;
     public Joystick operator;
+    private boolean notABoolean;
 
-    public ArmZero(Arm arm) {
+    public ArmPower0(Arm arm, boolean notABoolean) {
         super();
         this.arm = arm;
-        armTimer = new Timer();
+        this.notABoolean = notABoolean;
     }
 
     public void Begin() {
-        armTimer.reset();
-        armTimer.start();
     }
 
     public void Update() {
-        arm.autoExtend = false;
-        arm.RetractManual(0.2f);
-        if (armTimer.get() > 0.2) {
-            isDone = true;
-            arm.ResetEncoder();
-            arm.autoExtend = true;
-        }
+
+        arm.powerBool = notABoolean;
+        isDone = true;
     }
 }

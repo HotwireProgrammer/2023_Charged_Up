@@ -147,6 +147,7 @@ public class Robot extends TimedRobot {
 	}
 
 	public void autonomousInit() {
+		arm.powerBool = false;
 		currentAutoStep = 0;
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(1);
 
@@ -164,28 +165,38 @@ public class Robot extends TimedRobot {
 		firstAuto = new LinkedList<AutoStep>();
 
 		firstAuto.add(new NavxReset(sensorNavx));
+		firstAuto.add(new GripperStep(gripper, true));
+		firstAuto.add(new ArmZero(arm));
+		firstAuto.add(new ArmMove(arm, 1.5f, -0.3f, operator));
+		firstAuto.add(new ArmPushPull(arm, 0.5f, true));
 		firstAuto.add(new TimedForward(driveTrain, 0.7f, -0.2f));
-		firstAuto.add(new EncoderForwardFeet(driveTrain, 5.0f, 0.2f));
+		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.3f));
+		firstAuto.add(new ArmPushPull(arm, 0.5f, false));
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.4f));
+		firstAuto.add(new ArmPower0(arm, true));
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
+
+
+
+
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 		firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
 		firstAuto.add(new Wait(driveTrain, 0.25f));
 		firstAuto.add(new TimedForward(driveTrain, 1.0f, -0.3f));
 		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+		firstAuto.add(new ArmPower0(arm, false));
 
 
 
-		// firstAuto.add(new GripperStep(gripper, true));
-		// firstAuto.add(new ArmZero(arm));
-		// firstAuto.add(new ArmPushPull(arm, 0.5f, false));
-		// firstAuto.add(new ArmZero(arm));
-		// firstAuto.add(new ArmMove(arm, 1.5f, -0.2f, operator));
+
+
 		
 		
 		// firstAuto.add(new ArmPushPull(arm, 0.5f, false));
 
 
 
-		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.5f));
 		// firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
 
 		// firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, 0.5f));
@@ -201,8 +212,8 @@ public class Robot extends TimedRobot {
 	public void autonomousPeriodic() {
 		SmartDashboard.putBoolean("RobotEnabled", true);
 
-		arm.AutoUpdate();
 		arm.Update(0, operator);
+		arm.AutoUpdate();
 		gripper.AutoPeriodic();
 
 		// autonomous loop
@@ -226,6 +237,7 @@ public class Robot extends TimedRobot {
 	}
 
 	public void teleopInit() {
+		arm.powerBool = false;
 
 		sensorNavx.reset();
 
@@ -390,7 +402,7 @@ public class Robot extends TimedRobot {
 
 		double volts = operator.getRawAxis(0) * 5.0;
 		System.out.println(volts);
-		arm.PowerManual(volts);
+		arm.PowerManual(0.0f);
 		arm.ResetEncoder();
 
 		driveTrain.SetBothSpeed(0.0f);

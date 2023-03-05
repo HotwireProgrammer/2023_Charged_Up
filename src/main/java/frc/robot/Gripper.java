@@ -26,7 +26,7 @@ public class Gripper {
 
     public void AutoPeriodic() {
         if (doClose) {
-            motorGripper.set(0.6f);
+            motorGripper.set(0.2f);
         }
     }
 

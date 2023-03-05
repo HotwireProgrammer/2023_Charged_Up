@@ -28,6 +28,8 @@ public class Arm {
     public double armI = 0.00;
     public double armD = 0.00;
 
+    public boolean powerBool = false;
+
     public double voltsArm = 0;
 
     public boolean extended = false;
@@ -102,6 +104,9 @@ public class Arm {
         if (operator.getRawButton(9)) {
             // voltsArm = 7.5 * VertStick;
         }
+        if(powerBool){
+            voltsArm = 0.0f;
+        } 
 
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
@@ -141,10 +146,14 @@ public class Arm {
 
     public void AutoUpdate() {
 
+
+        System.out.println(encoderArmDistance.getPosition()+" pos");
+
         if (!autoExtend) { return; }
 
         if (autoDoExtend) {
             if (encoderArmDistance.getPosition() > extendEncoderOut) {
+                System.out.println("working");
                 motorArmRetraction.set(-0.6f);
             } else {
                 motorArmRetraction.set(0f);
@@ -152,11 +161,14 @@ public class Arm {
 
         } else {
             if (encoderArmDistance.getPosition() < extendEncoderIn) {
+                System.out.println("working2");
                 motorArmRetraction.set(0.6f);
             } else {
+
                 motorArmRetraction.set(0.2f);
             }
         }
+
     }
 
     public void debug() {
