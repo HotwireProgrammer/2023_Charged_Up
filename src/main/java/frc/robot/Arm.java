@@ -24,9 +24,9 @@ public class Arm {
     public RelativeEncoder encoderArmRevolutions = motorArm1.getEncoder();
     public RelativeEncoder encoderArmDistance = motorArmRetraction.getEncoder();
 
-    public double armP = 1.0f;
+    public double armP = 8.0f;
     public double armI = 0.00;
-    public double armD = 0.00;
+    public double armD = 0.6f;
 
     public boolean powerBool = false;
 
@@ -36,7 +36,7 @@ public class Arm {
 
     private float offset = 0;
     // 61 distance
-    public PIDController pidArm = new PIDController(armP, armI, armD);
+    public HotPID pidArm = new HotPID("pidArm", armP, armI, armD);
 
     // 1.36
     public double idlePowerArm = 2.03;
@@ -50,13 +50,7 @@ public class Arm {
 
     public Arm() {
 
-        SmartDashboard.putNumber("arm p", armP);
-        SmartDashboard.putNumber("arm i", armI);
-        SmartDashboard.putNumber("arm d", armD);
-        armP = SmartDashboard.getNumber("arm p", armP);
-        armI = SmartDashboard.getNumber("arm i", armI);
-        armD = SmartDashboard.getNumber("arm d", armD);
-        PIDController pidArm = new PIDController(armP, armI, armD);
+
     }
 
     public void OffsetGravity(boolean cone, boolean extended) {
@@ -77,11 +71,11 @@ public class Arm {
 
     public void Update(double VertStick, Joystick operator) {
 
-        setPointArm = setPointArm + VertStick / 100.0f;
-        if (setPointArm < 3.14f / 4.0f) {
-            setPointArm = 3.14f / 4.0f;
-        } else if (setPointArm > 3.14f * 3.0f / 4.0f) {
-            setPointArm = 3.14f * 3.0f / 4.0f;
+        setPointArm = setPointArm + VertStick *3.14/ 50.0f;
+        if (setPointArm < 0.0f) {
+            setPointArm = 0.0f;
+        } else if (setPointArm > 3.14f) {
+            setPointArm = 3.14f;
         }
 
         idlePowerArm = Robot.Lerp(1.0f, 3.0f, (float) (Math.abs(encoderArmDistance.getPosition()) / 77.0f));
@@ -94,12 +88,15 @@ public class Arm {
 
         // voltsArm = 10 * VertStick;
 
-         voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
+        //  voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + 5 * VertStick;
 
         // System.out.println(-pidArm.calculate(encoderArmRadians, setPointArm) + " pid");
         // System.out.println(setPointArm/3.14f + " setpoint");
 
-        //voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) - pidArm.calculate(encoderArmRadians, setPointArm/3.14f);
+        pidArm.setpoint = setPointArm;
+
+        voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + pidArm.Calculate(encoderArmRadians);
+        System.out.println(encoderArmRadians+ " Radians ");
 
         if (operator.getRawButton(9)) {
             // voltsArm = 7.5 * VertStick;
@@ -111,11 +108,6 @@ public class Arm {
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
 
-        // System.out.println(voltsArm + " powerV");
-        // System.out.println(encoderArmRadians + " radians");
-        // System.out.println((encoderArmRevolutions.getPosition()-offset + 0.5) +
-        // "math");
-        // System.out.println(offset + "offset");
 
         // arm retract and extend
 
