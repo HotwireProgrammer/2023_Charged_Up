@@ -48,7 +48,7 @@ public class Gripper {
 
         if (robot.operator.getRawButtonPressed(5)) {
             close = true;
-            closingForce = 0.3;
+            closingForce = 0.2f;
 
         }
         if (robot.operator.getRawButtonPressed(7)) {

@@ -24,9 +24,9 @@ public class Arm {
     public RelativeEncoder encoderArmRevolutions = motorArm1.getEncoder();
     public RelativeEncoder encoderArmDistance = motorArmRetraction.getEncoder();
 
-    public double armP = 8.0f;
+    public double armP = 10.0f;
     public double armI = 0.00;
-    public double armD = 0.6f;
+    public double armD = 0.4f;//0.6f
 
     public boolean powerBool = false;
 
@@ -45,7 +45,7 @@ public class Arm {
     public boolean autoDoExtend = false;
     public boolean autoExtend = false;
 
-    public int extendEncoderOut = -45;
+    public int extendEncoderOut = -61;
     public int extendEncoderIn = -5;
 
     public Arm() {
@@ -69,13 +69,22 @@ public class Arm {
         // }
     }
 
+    public void TeleopInit(){
+        setPointArm = 1.57f;
+    }
+
     public void Update(double VertStick, Joystick operator) {
 
+        if(Math.abs(VertStick)< 0.03f){
+            VertStick = 0.0f;
+        }
+
+
         setPointArm = setPointArm + VertStick *3.14/ 50.0f;
-        if (setPointArm < 0.0f) {
-            setPointArm = 0.0f;
-        } else if (setPointArm > 3.14f) {
-            setPointArm = 3.14f;
+        if (setPointArm < -0.6f) {
+            setPointArm = -0.6f;
+        } else if (setPointArm > 3.6f) {
+            setPointArm = 3.6f;
         }
 
         idlePowerArm = Robot.Lerp(1.0f, 3.0f, (float) (Math.abs(encoderArmDistance.getPosition()) / 77.0f));
@@ -173,6 +182,7 @@ public class Arm {
     // }
 
     public void ResetEncoder() {
+        setPointArm =1.57f;
         encoderArmDistance.setPosition(0.0f);
         offset = (float) encoderArmRevolutions.getPosition();
     }

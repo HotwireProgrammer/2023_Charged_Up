@@ -147,6 +147,7 @@ public class Robot extends TimedRobot {
 	}
 
 	public void autonomousInit() {
+		arm.setPointArm = 1.57f;
 		arm.powerBool = false;
 		currentAutoStep = 0;
 		NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(1);
@@ -167,8 +168,8 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new NavxReset(sensorNavx));
 		firstAuto.add(new GripperStep(gripper, true));
 		firstAuto.add(new ArmZero(arm));
-		firstAuto.add(new ArmMove(arm, 1.5f, -0.3f, operator));
-		firstAuto.add(new ArmPushPull(arm, 0.5f, true));
+		firstAuto.add(new ArmMove(arm, 1.5f, -0.5f, operator));
+		firstAuto.add(new ArmPushPull(arm, 1.2f, true));
 		firstAuto.add(new TimedForward(driveTrain, 0.7f, -0.2f));
 		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.3f));
 		firstAuto.add(new ArmPushPull(arm, 0.5f, false));
@@ -237,6 +238,7 @@ public class Robot extends TimedRobot {
 	}
 
 	public void teleopInit() {
+		arm.setPointArm = 1.57f;
 		arm.powerBool = false;
 
 		sensorNavx.reset();
@@ -400,6 +402,8 @@ public class Robot extends TimedRobot {
 
 	public void testPeriodic() {
 
+		System.out.println(sensorNavx.getPitch()+"pitch");
+
 		double volts = operator.getRawAxis(0) * 5.0;
 		System.out.println(volts);
 		arm.PowerManual(0.0f);
@@ -441,8 +445,18 @@ public class Robot extends TimedRobot {
 			rightJoystick = (float)(expo*Math.pow(rightJoystick, 3) + (1-expo) *rightJoystick);
 			// System.out.println(rightJoystick+ " right joystick");
 
+
+
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);
 			driveTrain.SetLeftSpeed(-leftJoystick + rightJoystick);
+
+			boolean overrideAntiTip = false;
+			if (flightStickLeft.getRawButton(1)){
+				overrideAntiTip = true;
+			}
+			if((Math.abs(sensorNavx.getPitch())>5.0f) && (!overrideAntiTip)&& (Math.abs((sensorNavx.getRawGyroX()- sensorNavx.getPitch())) < Math.abs(sensorNavx.getPitch()))){
+				// driveTrain.SetBothSpeed(sensorNavx.getPitch()*0.05f);
+			}
 			driveTrain.Update();
 
 			// driveTrain.SetRightSpeed(leftJoystick);

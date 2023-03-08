@@ -26,8 +26,8 @@ public class ArmZero extends AutoStep {
 
     public void Update() {
         arm.autoExtend = false;
-        arm.RetractManual(0.2f);
-        if (armTimer.get() > 0.2) {
+        arm.RetractManual(0.4f);
+        if (armTimer.get() > 0.5) {
             isDone = true;
             arm.ResetEncoder();
             arm.autoExtend = true;
