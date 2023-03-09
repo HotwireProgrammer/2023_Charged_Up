@@ -114,6 +114,9 @@ public class Arm {
             voltsArm = 0.0f;
         } 
 
+        
+        motorArm1.getMotorTemperature();
+
         motorArm1.setVoltage(voltsArm);
         motorArm2.setVoltage(voltsArm);
 
