@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
 
 	// Sensors
 	public AnalogGyro headinGryo = new AnalogGyro(0);
-	public AHRS sensorNavx = new AHRS();
+	public static AHRS sensorNavx = new AHRS();
 
 	// Drive train
 	public DriveTrain driveTrain = new DriveTrain(1, 2, 3, 4);
@@ -103,6 +103,10 @@ public class Robot extends TimedRobot {
 
 	// Auto
 	public LinkedList<AutoStep> firstAuto;
+	public LinkedList<AutoStep> secondAuto;
+	public LinkedList<AutoStep> testAuto;
+	public LinkedList<AutoStep> test2Auto;
+
 	public LinkedList<AutoStep> autonomousSelected;
 	public int currentAutoStep = 0;
 
@@ -184,11 +188,76 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 		firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
 		firstAuto.add(new Wait(driveTrain, 0.25f));
-		firstAuto.add(new TimedForward(driveTrain, 1.0f, -0.3f));
+		firstAuto.add(new TimedForward(driveTrain, 1.0f, -0.4f));
 		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 		firstAuto.add(new ArmPower0(arm, false));
 
 
+
+
+
+
+
+		secondAuto = new LinkedList<AutoStep>();
+
+		secondAuto.add(new NavxReset(sensorNavx));
+		secondAuto.add(new GripperStep(gripper, true));
+		secondAuto.add(new ArmZero(arm));
+		secondAuto.add(new ArmMove(arm, 1.5f, -0.5f, operator));
+		secondAuto.add(new ArmPushPull(arm, 1.2f, true));
+		secondAuto.add(new TimedForward(driveTrain, 0.7f, -0.2f));
+		secondAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.3f));
+		secondAuto.add(new ArmPushPull(arm, 0.5f, false));
+		secondAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.4f));
+		secondAuto.add(new ArmPower0(arm, true));
+		secondAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
+		secondAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
+
+		secondAuto.add(new EncoderForwardFeet(driveTrain, 7.0f, 0.4f));
+
+
+		testAuto = new LinkedList<AutoStep>();
+
+
+		testAuto.add(new NavxReset(sensorNavx));
+
+		testAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.6f));
+		testAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+
+
+		test2Auto = new LinkedList<AutoStep>();
+
+		
+		test2Auto.add(new NavxReset(sensorNavx));
+		test2Auto.add(new GripperStep(gripper, true));
+		test2Auto.add(new ArmZero(arm));
+		test2Auto.add(new ArmMove(arm, 1.5f, -0.5f, operator));
+		test2Auto.add(new ArmPushPull(arm, 1.2f, true));
+		// test2Auto.add(new TimedForward(driveTrain, 0.7f, -0.2f));
+		test2Auto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.3f));
+		test2Auto.add(new ArmPushPull(arm, 0.5f, false));
+		test2Auto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.4f));
+		test2Auto.add(new ArmPower0(arm, true));
+		test2Auto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
+		test2Auto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
+
+
+
+
+		test2Auto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
+		test2Auto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
+		test2Auto.add(new Wait(driveTrain, 0.25f));
+		test2Auto.add(new TimedForward(driveTrain, 1.0f, -0.4f));
+		test2Auto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+		test2Auto.add(new ArmPower0(arm, false));
+
+
+		// firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
+		// firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
+		// firstAuto.add(new Wait(driveTrain, 0.25f));
+		// firstAuto.add(new TimedForward(driveTrain, 1.0f, -0.3f));
+		// firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+		// firstAuto.add(new ArmPower0(arm, false));
 
 
 
@@ -206,7 +275,21 @@ public class Robot extends TimedRobot {
 		// firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
 		// firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
 
-		autonomousSelected = firstAuto;
+
+		if (autoChoice == 0){
+			autonomousSelected = firstAuto;
+		}else if(autoChoice == 1){
+			autonomousSelected = secondAuto;
+		}else if(autoChoice == 2){
+			autonomousSelected = testAuto;
+		}else if(autoChoice == 3 ){
+			autonomousSelected = test2Auto;
+		}else{
+			autonomousSelected = testAuto;
+		}
+		autonomousSelected = test2Auto;
+                         
+		// autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
 	}
 

@@ -33,7 +33,7 @@ public class EncoderForwardFeet extends AutoStep {
         encoderTarget = encoderTargetFeet * adjuster;
         double currentError = Math.abs(encoderStart - driveTrain.getEncoder());
         if (encoderTarget-currentError < 48000) {
-            driveTrain.SetBothSpeed(0.2f * dir);
+            driveTrain.SetBothSpeed(0.4f * dir);
         }
         if (currentError > encoderTarget) {
             isDone = true;
