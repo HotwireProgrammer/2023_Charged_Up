@@ -170,21 +170,22 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new NavxReset(sensorNavx));
 		firstAuto.add(new GripperStep(gripper, true));
 		firstAuto.add(new ArmZero(arm));
-		firstAuto.add(new ArmMove(arm, 1.5f, -0.5f, operator));
-		firstAuto.add(new ArmPushPull(arm, 1.2f, true));
+		firstAuto.add(new ArmMove(arm, 0.7f, -1.0f, operator));
+		firstAuto.add(new ArmPushPull(arm, 0.5f, true));
 		firstAuto.add(new TimedForward(driveTrain, 0.7f, -0.2f));
 		firstAuto.add(new MotorMoveStep(gripper.motorGripper, 0.3f, -0.3f));
 		firstAuto.add(new ArmPushPull(arm, 0.5f, false));
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.4f));
 		firstAuto.add(new ArmPower0(arm, true));
-		firstAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
-		firstAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, 0.4f));
 
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 
-		// firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
+
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
 		firstAuto.add(new Wait(driveTrain, 1.0f));
-		// firstAuto.add(new TimedForward(driveTrain, 2.0f, -0.3f));
+		firstAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.4f));
+
 
 
 		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
@@ -212,7 +213,7 @@ public class Robot extends TimedRobot {
 
 		testAuto.add(new NavxReset(sensorNavx));
 
-		testAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.6f));
+		// testAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.6f));
 		testAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 
 		test2Auto = new LinkedList<AutoStep>();

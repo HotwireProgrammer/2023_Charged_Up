@@ -157,7 +157,6 @@ public class Arm {
 
         if (autoDoExtend) {
             if (encoderArmDistance.getPosition() > extendEncoderOut) {
-                System.out.println("working");
                 motorArmRetraction.set(-0.6f);
             } else {
                 motorArmRetraction.set(0f);
@@ -165,7 +164,6 @@ public class Arm {
 
         } else {
             if (encoderArmDistance.getPosition() < extendEncoderIn) {
-                System.out.println("working2");
                 motorArmRetraction.set(0.6f);
             } else {
 

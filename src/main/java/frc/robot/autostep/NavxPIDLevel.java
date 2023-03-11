@@ -15,7 +15,9 @@ public class NavxPIDLevel extends AutoStep {
     public float speed;
     public DriveTrain drivetrain;
     public boolean didClimb;
-    public HotPID navxPID = new HotPID("navx PID", 0.01f, 0.0f, 0.005f);
+    public HotPID navxPID = new HotPID("navx PID", 0.01f, 0.0f, 0.003f);
+    // public HotPID navxPID = new HotPID("navx PID", 0.01f, 0.0f, 0.005f);
+
     public Timer balanceTimer;
     public boolean timerStarted = false;
     
@@ -55,7 +57,7 @@ public class NavxPIDLevel extends AutoStep {
         // if(balanceTimer.get()<0.5f&& timerStarted){
         //     speed = 0.0f;
         // }
-        if(Math.abs(navx.getPitch())< 10.0f){
+        if(Math.abs(navx.getPitch())< 5.0f){
             speed = 0.0f;
         }
         drivetrain.SetBothSpeed(-speed);
