@@ -181,10 +181,14 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
 
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
-		firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
+
+		// firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
 		firstAuto.add(new Wait(driveTrain, 1.0f));
-		firstAuto.add(new TimedForward(driveTrain, 2.0f, -0.3f));
+		// firstAuto.add(new TimedForward(driveTrain, 2.0f, -0.3f));
+
+
 		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+
 		firstAuto.add(new ArmPower0(arm, false));
 
 		secondAuto = new LinkedList<AutoStep>();
@@ -227,10 +231,13 @@ public class Robot extends TimedRobot {
 		test2Auto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
 
 		test2Auto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
-		test2Auto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
-		test2Auto.add(new Wait(driveTrain, 0.25f));
-		test2Auto.add(new TimedForward(driveTrain, 1.0f, -0.4f));
-		test2Auto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+
+		// test2Auto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
+		test2Auto.add(new Wait(driveTrain, 1.0f));
+		// test2Auto.add(new TimedForward(driveTrain, 1.0f, -0.4f));
+
+		// test2Auto.add(new NavxPIDLevel(sensorNavx, driveTrain));
+
 		test2Auto.add(new ArmPower0(arm, false));
 
 		// firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
