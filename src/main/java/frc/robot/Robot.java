@@ -73,14 +73,12 @@ public class Robot extends TimedRobot {
 	public float pwrm = 1;
 	public double setPointArm = 0;
 
-
-	//ArmLogic
+	// ArmLogic
 	public boolean cone = false;
 
 	// Robot Components
 	public Gripper gripper;
 	public Arm arm = new Arm();
-	
 
 	// Joysticks
 	// public Joystick driver;
@@ -182,21 +180,12 @@ public class Robot extends TimedRobot {
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
 
-
-
-
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 		firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
-		firstAuto.add(new Wait(driveTrain, 0.25f));
-		firstAuto.add(new TimedForward(driveTrain, 1.0f, -0.4f));
+		firstAuto.add(new Wait(driveTrain, 1.0f));
+		firstAuto.add(new TimedForward(driveTrain, 2.0f, -0.3f));
 		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 		firstAuto.add(new ArmPower0(arm, false));
-
-
-
-
-
-
 
 		secondAuto = new LinkedList<AutoStep>();
 
@@ -213,21 +202,17 @@ public class Robot extends TimedRobot {
 		secondAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
 		secondAuto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
 
-		secondAuto.add(new EncoderForwardFeet(driveTrain, 7.0f, 0.4f));
-
+		secondAuto.add(new EncoderForwardFeet(driveTrain, 9.0f, 0.4f));
 
 		testAuto = new LinkedList<AutoStep>();
-
 
 		testAuto.add(new NavxReset(sensorNavx));
 
 		testAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.6f));
 		testAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 
-
 		test2Auto = new LinkedList<AutoStep>();
 
-		
 		test2Auto.add(new NavxReset(sensorNavx));
 		test2Auto.add(new GripperStep(gripper, true));
 		test2Auto.add(new ArmZero(arm));
@@ -241,16 +226,12 @@ public class Robot extends TimedRobot {
 		test2Auto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
 		test2Auto.add(new EncoderForwardFeet(driveTrain, 1.0f, 0.2f));
 
-
-
-
 		test2Auto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 		test2Auto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
 		test2Auto.add(new Wait(driveTrain, 0.25f));
 		test2Auto.add(new TimedForward(driveTrain, 1.0f, -0.4f));
 		test2Auto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 		test2Auto.add(new ArmPower0(arm, false));
-
 
 		// firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 		// firstAuto.add(new TimedForward(driveTrain, 1.0f, 0.3f));
@@ -259,13 +240,7 @@ public class Robot extends TimedRobot {
 		// firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 		// firstAuto.add(new ArmPower0(arm, false));
 
-
-
-		
-		
 		// firstAuto.add(new ArmPushPull(arm, 0.5f, false));
-
-
 
 		// firstAuto.add(new ArmMove(arm, 1.5f, -0.1f, operator));
 
@@ -275,20 +250,19 @@ public class Robot extends TimedRobot {
 		// firstAuto.add(new TimedForward(driveTrain, 1.5f, -0.5f));
 		// firstAuto.add(new TimedTurn(driveTrain, 0.4f, -0.6f));
 
-
-		if (autoChoice == 0){
+		if (autoChoice == 0) {
 			autonomousSelected = firstAuto;
-		}else if(autoChoice == 1){
+		} else if (autoChoice == 1) {
 			autonomousSelected = secondAuto;
-		}else if(autoChoice == 2){
+		} else if (autoChoice == 2) {
 			autonomousSelected = testAuto;
-		}else if(autoChoice == 3 ){
+		} else if (autoChoice == 3) {
 			autonomousSelected = test2Auto;
-		}else{
+		} else {
 			autonomousSelected = testAuto;
 		}
-		autonomousSelected = test2Auto;
-                         
+		// autonomousSelected = test2Auto;
+
 		// autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
 	}
@@ -378,14 +352,13 @@ public class Robot extends TimedRobot {
 
 		// System.out.println(sensorNavx.getPitch());
 
-		if(operator.getRawButton(10)){
+		if (operator.getRawButton(10)) {
 			arm.ResetEncoder();
 		}
 
 		arm.OffsetGravity(cone, false);
 
 		gripper.teleopPeriodic();
-		
 
 		{
 			float speed = 1.0f;
@@ -401,7 +374,13 @@ public class Robot extends TimedRobot {
 			if (operator.getRawButton(9)) {
 				arm.PowerManual(0);
 			}
-			driveTrain.SetCoast();
+
+			if (operator.getRawButton(8)) {
+				driveTrain.SetBreak();
+			} else {
+				driveTrain.SetCoast();
+			}
+			System.out.println(" flight" + flightStickRight.getRawButton(1));
 			ControllerDrive();
 			driveTrain.Update();
 		}
@@ -426,19 +405,19 @@ public class Robot extends TimedRobot {
 			limelight.Position(driveTrain);
 			driveTrain.SetBreak();
 		} else {
-			driveTrain.SetCoast();
+			// driveTrain.SetCoast();
 			// ControllerDrive();
 		}
 
-		if (flightStickRight.getRawButton(1)) {
-			// auto balance
+		// if (flightStickRight.getRawButton(1)) {
+		// 	// auto balance
 
-			float error = -sensorNavx.getPitch();
-			double output = pidAutoBalance.Calculate(error);
-			driveTrain.SetBothSpeed((float)output);
-		} else {
+		// 	float error = -sensorNavx.getPitch();
+		// 	double output = pidAutoBalance.Calculate(error);
+		// 	driveTrain.SetBothSpeed((float) output);
+		// } else {
 			ControllerDrive();
-		}
+		
 
 		UpdateMotors();
 	}
@@ -485,7 +464,7 @@ public class Robot extends TimedRobot {
 
 	public void testPeriodic() {
 
-		System.out.println(sensorNavx.getPitch()+"pitch");
+		System.out.println(sensorNavx.getPitch() + "pitch");
 
 		double volts = operator.getRawAxis(0) * 5.0;
 		System.out.println(volts);
@@ -524,20 +503,19 @@ public class Robot extends TimedRobot {
 
 			float leftJoystick = DriveScaleSelector((float) flightStickLeft.getRawAxis(1), DriveScale.linear);
 			float rightJoystick = (DriveScaleSelector((float) flightStickRight.getRawAxis(0), DriveScale.linear));
-			float expo =0.2f;
-			rightJoystick = (float)(expo*Math.pow(rightJoystick, 3) + (1-expo) *rightJoystick);
+			float expo = 0.2f;
+			rightJoystick = (float) (expo * Math.pow(rightJoystick, 3) + (1 - expo) * rightJoystick);
 			// System.out.println(rightJoystick+ " right joystick");
-
-
 
 			driveTrain.SetRightSpeed(-leftJoystick + -rightJoystick);
 			driveTrain.SetLeftSpeed(-leftJoystick + rightJoystick);
 
 			boolean overrideAntiTip = false;
-			if (flightStickLeft.getRawButton(1)){
+			if (flightStickLeft.getRawButton(1)) {
 				overrideAntiTip = true;
 			}
-			if((Math.abs(sensorNavx.getPitch())>5.0f) && (!overrideAntiTip)&& (Math.abs((sensorNavx.getRawGyroX()- sensorNavx.getPitch())) < Math.abs(sensorNavx.getPitch()))){
+			if ((Math.abs(sensorNavx.getPitch()) > 5.0f) && (!overrideAntiTip) && (Math
+					.abs((sensorNavx.getRawGyroX() - sensorNavx.getPitch())) < Math.abs(sensorNavx.getPitch()))) {
 				// driveTrain.SetBothSpeed(sensorNavx.getPitch()*0.05f);
 			}
 			driveTrain.Update();
