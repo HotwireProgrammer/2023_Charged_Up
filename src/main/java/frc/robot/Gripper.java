@@ -1,5 +1,7 @@
 package frc.robot;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -13,6 +15,8 @@ public class Gripper {
     public CANSparkMax motorRotationGripper = new CANSparkMax(15, MotorType.kBrushless);
 
     private Robot robot;
+    private Arm arm;
+
 
     private Timer timer = new Timer();
     private boolean flipped = false;
@@ -20,8 +24,9 @@ public class Gripper {
     private double closingForce = 0;
     private boolean doClose = true;
 
-    public Gripper(Robot robot) {
+    public Gripper(Robot robot, Arm arm) {
         this.robot = robot;
+        this.arm = arm;
     }
 
     public void AutoPeriodic() {
@@ -35,6 +40,18 @@ public class Gripper {
 
         // motorRotationGripper.set(robot.operator.getRawAxis(0) / 2.0f);
         float flipSpeed = 0.2f;
+       
+            // if ((arm.encoderArmRadians < 3.0f) && !robot.operator.getRawButton(9)) {
+            //     motorRotationGripper.set(flipSpeed);
+            //     flipped = false;
+            // } else if (!robot.operator.getRawButton(9)) {
+            //     flipped = true;
+            //     motorRotationGripper.set(-flipSpeed);
+
+            // }else{ 
+            //     motorRotationGripper.set(0.0f);
+            // }
+
         if (robot.operator.getRawButtonPressed(3)) {
             if (flipped) {
                 motorRotationGripper.set(flipSpeed);
@@ -45,6 +62,7 @@ public class Gripper {
 
             }
         }
+
 
         if (robot.operator.getRawButtonPressed(5)) {
             close = true;
@@ -65,7 +83,7 @@ public class Gripper {
             timer.reset();
             robot.cone = false;
             close = false;
-            motorGripper.set(-0.2);
+            motorGripper.set(-0.4);
         } else if (timer.get() > 1 && close == false) {
             motorGripper.set(0.0);
         }

@@ -23,6 +23,7 @@ public class Arm {
 
     public RelativeEncoder encoderArmRevolutions = motorArm1.getEncoder();
     public RelativeEncoder encoderArmDistance = motorArmRetraction.getEncoder();
+    public float encoderArmRadians = 0;
 
     public double armP = 10.0f;
     public double armI = 0.00;
@@ -80,6 +81,9 @@ public class Arm {
         }
 
 
+        if (operator.getRawButtonPressed(1)){
+            setPointArm = setPointArm + 0.3f;
+        }
         setPointArm = setPointArm + VertStick *3.14/ 50.0f;
         if (setPointArm < -0.6f) {
             setPointArm = -0.6f;
@@ -92,8 +96,10 @@ public class Arm {
         // motorArmRetraction.set(VertStick);
 
         encoderArmRevolutions = motorArm1.getEncoder();
-        float encoderArmRadians = (float) ((encoderArmRevolutions.getPosition() - offset) * 2.0f * 3.14f / 24.0f
+        encoderArmRadians = (float) ((encoderArmRevolutions.getPosition() - offset) * 2.0f * 3.14f / 24.0f
                 + 3.14f / 2.0f);
+
+        System.out.println(encoderArmRadians+ " radians");
 
         // voltsArm = 10 * VertStick;
 

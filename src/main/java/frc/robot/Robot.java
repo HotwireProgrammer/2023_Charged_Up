@@ -117,16 +117,15 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		arm.ResetEncoder();
 		SmartDashboard.putNumber("Ballcount", 0);
-		SmartDashboard.putBoolean("TwoBall", false);
-		SmartDashboard.putBoolean("FourBallBlue", false);
-		SmartDashboard.putBoolean("FourBallRed", false);
+		SmartDashboard.putBoolean("Balance", false);
+		SmartDashboard.putBoolean("DriveStraight", false);
 		SmartDashboard.putBoolean("Test", false);
 		CameraServer.startAutomaticCapture();
 		limelight.SetLight(false);
 		limelight.Init();
 		SmartDashboard.putNumber(autoSelectKey, 0);
 
-		gripper = new Gripper(this);
+		gripper = new Gripper(this, arm);
 	}
 
 	public void periodic() {
@@ -162,7 +161,10 @@ public class Robot extends TimedRobot {
 		// Autonomous selection
 
 		double autoChoice = SmartDashboard.getNumber(autoSelectKey, 0);
-		boolean Test = SmartDashboard.getBoolean("Test", false);
+		boolean test = SmartDashboard.getBoolean("Test", false);
+		boolean balance = SmartDashboard.getBoolean("Balance", false);
+		boolean driveStraight = SmartDashboard.getBoolean("DriveStraight", false);
+
 
 		// firstAuto.add(new TimedForward(driveTrain, 1, 0.2f));
 		firstAuto = new LinkedList<AutoStep>();
@@ -270,6 +272,12 @@ public class Robot extends TimedRobot {
 			autonomousSelected = testAuto;
 		}
 		// autonomousSelected = test2Auto;
+		if(balance){
+			autonomousSelected = firstAuto;
+		}
+		if(driveStraight){
+			autonomousSelected = secondAuto;
+		}
 
 		// autonomousSelected = firstAuto;
 		autonomousSelected.get(0).Begin();
@@ -511,7 +519,7 @@ public class Robot extends TimedRobot {
 
 			float leftJoystick = DriveScaleSelector((float) flightStickLeft.getRawAxis(1), DriveScale.linear);
 			float rightJoystick = (DriveScaleSelector((float) flightStickRight.getRawAxis(0), DriveScale.linear));
-			float expo = 0.2f;
+			float expo = 0.4f;
 			rightJoystick = (float) (expo * Math.pow(rightJoystick, 3) + (1 - expo) * rightJoystick);
 			// System.out.println(rightJoystick+ " right joystick");
 
