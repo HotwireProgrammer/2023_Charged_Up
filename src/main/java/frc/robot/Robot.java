@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
 
 
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
-		firstAuto.add(new Wait(driveTrain, 1.0f));
+		firstAuto.add(new Wait(driveTrain, 2.0f));
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.4f));
 
 
@@ -291,7 +291,7 @@ public class Robot extends TimedRobot {
 		gripper.AutoPeriodic();
 
 		// autonomous loop
-		System.out.println("Current auto step " + currentAutoStep);
+		// System.out.println("Current auto step " + currentAutoStep);
 		if (currentAutoStep < autonomousSelected.size()) {
 
 			autonomousSelected.get(currentAutoStep).Update();
@@ -396,7 +396,6 @@ public class Robot extends TimedRobot {
 			} else {
 				driveTrain.SetCoast();
 			}
-			System.out.println(" flight" + flightStickRight.getRawButton(1));
 			ControllerDrive();
 			driveTrain.Update();
 		}
@@ -480,10 +479,8 @@ public class Robot extends TimedRobot {
 
 	public void testPeriodic() {
 
-		System.out.println(sensorNavx.getPitch() + "pitch");
 
 		double volts = operator.getRawAxis(0) * 5.0;
-		System.out.println(volts);
 		arm.PowerManual(0.0f);
 		arm.ResetEncoder();
 

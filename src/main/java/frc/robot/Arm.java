@@ -99,7 +99,7 @@ public class Arm {
         encoderArmRadians = (float) ((encoderArmRevolutions.getPosition() - offset) * 2.0f * 3.14f / 24.0f
                 + 3.14f / 2.0f);
 
-        System.out.println(encoderArmRadians+ " radians");
+        // System.out.println(encoderArmRadians+ " radians");
 
         // voltsArm = 10 * VertStick;
 
@@ -111,7 +111,7 @@ public class Arm {
         pidArm.setpoint = setPointArm;
 
         voltsArm = -idlePowerArm * Math.cos(encoderArmRadians) + pidArm.Calculate(encoderArmRadians);
-        System.out.println(encoderArmRadians+ " Radians ");
+        // System.out.println(encoderArmRadians+ " Radians ");
 
         if (operator.getRawButton(9)) {
             // voltsArm = 7.5 * VertStick;
@@ -157,7 +157,7 @@ public class Arm {
     public void AutoUpdate() {
 
 
-        System.out.println(encoderArmDistance.getPosition()+" pos");
+        // System.out.println(encoderArmDistance.getPosition()+" pos");
 
         if (!autoExtend) { return; }
 
