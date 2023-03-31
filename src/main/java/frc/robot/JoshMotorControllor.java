@@ -20,6 +20,7 @@ public class JoshMotorControllor {
 			victor = new PWMVictorSPX(motorpwm);
 		} else {
 			talon = new TalonSRX(motorpwm);
+			
 		}
 
 		accelValue = AcelerationMax;

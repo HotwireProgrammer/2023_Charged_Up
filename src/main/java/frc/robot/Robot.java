@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenixpro.sim.ChassisReference;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.cscore.UsbCamera;
@@ -39,9 +41,15 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.autostep.*;
 import edu.wpi.first.wpilibj.Compressor;
@@ -50,6 +58,7 @@ import java.util.*;
 //import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax;
@@ -58,12 +67,25 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Robot extends TimedRobot {
 
+	//constants
+	public static double kTrackWidth = Units.inchesToMeters(28.0);
+	public static double kWheelBase = Units.inchesToMeters(28.0);
+
+	public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+		new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+		new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+		new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+		new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
 	// Sensors
 	public AnalogGyro headinGryo = new AnalogGyro(0);
 	public static AHRS sensorNavx = new AHRS();
 
 	// Drive train
 	public DriveTrain driveTrain = new DriveTrain(1, 2, 3, 4);
+
+	public SwerveSubsytem swerveSubsytem = new SwerveSubsytem();
+
+
 	// public TalonSRX frontLeft = new TalonSRX(1);
 	// public TalonSRX backLeft = new TalonSRX(2);
 	// public TalonSRX frontRight = new TalonSRX(3);
@@ -72,6 +94,11 @@ public class Robot extends TimedRobot {
 	// Logic
 	public float pwrm = 1;
 	public double setPointArm = 0;
+	public SlewRateLimiter dirSpeed1 = new SlewRateLimiter(10.0);
+	public SlewRateLimiter dirSpeed2 = new SlewRateLimiter(10.0);
+
+	public SlewRateLimiter angSpeed = new SlewRateLimiter(6.0);
+
 
 	// ArmLogic
 	public boolean cone = false;
@@ -134,6 +161,7 @@ public class Robot extends TimedRobot {
 
 	public void disabledInit() {
 
+		swerveSubsytem.stopModules();
 		// Controllers
 		driveTrain.SetBreak();
 		// driver = new Joystick(0);
@@ -165,7 +193,6 @@ public class Robot extends TimedRobot {
 		boolean balance = SmartDashboard.getBoolean("Balance", false);
 		boolean driveStraight = SmartDashboard.getBoolean("DriveStraight", false);
 
-
 		// firstAuto.add(new TimedForward(driveTrain, 1, 0.2f));
 		firstAuto = new LinkedList<AutoStep>();
 
@@ -183,12 +210,9 @@ public class Robot extends TimedRobot {
 
 		firstAuto.add(new NavxDriveUntil(sensorNavx, 5, 0.2f, driveTrain));
 
-
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 3.0f, 0.4f));
 		firstAuto.add(new Wait(driveTrain, 2.0f));
 		firstAuto.add(new EncoderForwardFeet(driveTrain, 4.0f, -0.4f));
-
-
 
 		firstAuto.add(new NavxPIDLevel(sensorNavx, driveTrain));
 
@@ -272,10 +296,10 @@ public class Robot extends TimedRobot {
 			autonomousSelected = testAuto;
 		}
 		// autonomousSelected = test2Auto;
-		if(balance){
+		if (balance) {
 			autonomousSelected = firstAuto;
 		}
-		if(driveStraight){
+		if (driveStraight) {
 			autonomousSelected = secondAuto;
 		}
 
@@ -425,19 +449,19 @@ public class Robot extends TimedRobot {
 		}
 
 		// if (flightStickRight.getRawButton(1)) {
-		// 	// auto balance
+		// // auto balance
 
-		// 	float error = -sensorNavx.getPitch();
-		// 	double output = pidAutoBalance.Calculate(error);
-		// 	driveTrain.SetBothSpeed((float) output);
+		// float error = -sensorNavx.getPitch();
+		// double output = pidAutoBalance.Calculate(error);
+		// driveTrain.SetBothSpeed((float) output);
 		// } else {
-			ControllerDrive();
-		
+		ControllerDrive();
 
 		UpdateMotors();
 	}
 
 	public void testInit() {
+		
 
 		// navx.reset();
 		// climber.coastMode();
@@ -461,26 +485,42 @@ public class Robot extends TimedRobot {
 		return (v0 + t * (v1 - v0));
 	}
 
-	// ffloat navxTarget;
-	// NavxTurnPID testTurn = new NavxTurnPID(driveTrain, navx, 10, 2.5f, navxPID);
-
-	// DigitalInput beamTest = new DigitalInput(1);
-	// beamTest.get();
-	// intakeSeven.set(ControlMode.PercentOutput, 0.5f);
-	// flightStickLeft.getRawButtonPressed(0);
-
-	/*
-	 * - run intake when flight stick top button pressed
-	 * - unless the ball is in beam break then don't run the intake
-	 * - run intake backwards always, regardless of ball when trigger button is
-	 * pressed
-	 */
-	// DigitalInput beamTest = new DigitalInput(1);
-
 	public void testPeriodic() {
 
+		double radSpeed = 2.0 * 3.14 * flightStickLeft.getRawAxis(0);
+		double xSpeed = 5.0 * flightStickRight.getRawAxis(1);
+		double ySpeed = 5.0 * flightStickRight.getRawAxis(0);
 
-		double volts = operator.getRawAxis(0) * 5.0;
+		if (Math.abs(radSpeed) < 0.03) {
+			radSpeed = 0.0;
+		}
+		if (Math.abs(xSpeed) < 0.03) {
+			xSpeed = 0.0;
+		}
+		if (Math.abs(ySpeed) < 0.03) {
+			ySpeed = 0.0;
+		}
+
+		xSpeed = dirSpeed1.calculate(xSpeed);
+		ySpeed = dirSpeed2.calculate(ySpeed);
+		radSpeed = angSpeed.calculate(radSpeed);
+
+		ChassisSpeeds chassisSpeeds;
+		Rotation2d CCWRad = Rotation2d.fromDegrees((Math.IEEEremainder(sensorNavx.getAngle(),360)));
+
+		if(flightStickLeft.getRawButton(1)){
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, radSpeed, CCWRad);
+		}else{
+			chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, radSpeed);
+		}
+
+
+		SwerveModuleState[] moduleStates = kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+		
+		swerveSubsytem.setModuleStates(moduleStates);
+
+
+
 		arm.PowerManual(0.0f);
 		arm.ResetEncoder();
 
@@ -488,6 +528,9 @@ public class Robot extends TimedRobot {
 		driveTrain.SetCoast();
 		driveTrain.Update();
 		UpdateMotors();
+
+		
+
 	}
 
 	public void ControllerDrive() {
