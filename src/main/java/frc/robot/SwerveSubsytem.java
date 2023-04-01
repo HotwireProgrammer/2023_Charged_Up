@@ -33,10 +33,15 @@ public class SwerveSubsytem {
     // driveMotorReversed,
     // boolean turningMotorReversed, double absoluteEncoderOffsetNative)
 
-    private final SwerveModule frontLeft = new SwerveModule(31, 41, false, false, 3448.0);
-    private final SwerveModule frontRight = new SwerveModule(32, 42, false, false, 1985.0);
-    private final SwerveModule backLeft = new SwerveModule(33, 43, false, false, 2109.0);
-    private final SwerveModule backRight = new SwerveModule(34, 44, false, false, 1798.0);
+    // private final SwerveModule frontLeft = new SwerveModule(31, 41, false, false, 955.0);
+    // private final SwerveModule frontRight = new SwerveModule(32, 42, false, false, 1083.0);
+    // private final SwerveModule backLeft = new SwerveModule(33, 43, false, false, 1283.0);
+    // private final SwerveModule backRight = new SwerveModule(34, 44, false, false, 955.0);
+
+    private final SwerveModule frontLeft = new SwerveModule(31, 41, false, false, 0.0);
+    private final SwerveModule frontRight = new SwerveModule(32, 42, false, false, 0.0);
+    private final SwerveModule backLeft = new SwerveModule(33, 43, false, false, 0.0);
+    private final SwerveModule backRight = new SwerveModule(34, 44, false, false, 0.0);
     private AHRS navx;
     // private final SwerveModule SPARECHANGENAME = new SwerveModule(35, 45, false,
     // false, 0.0);

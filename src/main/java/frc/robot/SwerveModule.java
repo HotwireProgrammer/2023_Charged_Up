@@ -55,7 +55,7 @@ public class SwerveModule {
         
 
         // turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+        turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         turningMotor.setNeutralMode(NeutralMode.Brake);
         driveMotor.setNeutralMode(NeutralMode.Coast);
@@ -113,6 +113,8 @@ public class SwerveModule {
         driveMotor.set(ControlMode.PercentOutput, state.speedMetersPerSecond / 5.0);
         float pidVal = (float)(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
 
+        
+
 
         if(pidVal < -0.99f){
             pidVal = -0.99f;
@@ -126,9 +128,9 @@ public class SwerveModule {
             // System.out.println(getAbsoluteEncoderRad() + " abs encoder");
             // System.out.println(getTurningPosition() + " rel encoder");
 
-                System.out.println(getTurningPosition() + " get turning position");
-                System.out.println(state.angle.getRadians() + " state.angle.getRadians()");
-                System.out.println(pidVal + " pid");
+                // System.out.println(getTurningPosition() + " get turning position");
+                // System.out.println(state.angle.getRadians() + " state.angle.getRadians()");
+                // System.out.println(pidVal + " pid");
 
 
         // SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "]

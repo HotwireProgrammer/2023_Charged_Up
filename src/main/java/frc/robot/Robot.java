@@ -117,6 +117,8 @@ public class Robot extends TimedRobot {
 	public Limelight limelight = new Limelight();
 
 	public HotPID navxPID = new HotPID("navx", 0.01, 0.01, 0.0);// was 0.0005
+	public HotPID navxTURNPID = new HotPID("Turn navx", 1.5, 0.0, 0.0);// was 0.0005
+
 	public HotPID pidAutoBalance = new HotPID("Balance", -0.05, 0, 0);
 
 	public enum DriveScale {
@@ -505,13 +507,28 @@ public class Robot extends TimedRobot {
 		ySpeed = dirSpeed2.calculate(ySpeed);
 		radSpeed = angSpeed.calculate(radSpeed);
 
-		ChassisSpeeds chassisSpeeds;
-		Rotation2d CCWRad = Rotation2d.fromDegrees((Math.IEEEremainder(sensorNavx.getAngle(),360)));
+		if(Math.abs(radSpeed)< 0.05){
+			radSpeed = 0.0;
+		}
 
-		if(flightStickLeft.getRawButton(1)){
+		navxTURNPID.setpoint = -6.14*(sensorNavx.getAngle() % 360) + radSpeed;
+		if (flightStickLeft.getRawButton(1)){
+			navxTURNPID.setpoint = 0.0;
+		}
+		radSpeed = navxTURNPID.Calculate(-6.14*(sensorNavx.getAngle() % 360));
+		ChassisSpeeds chassisSpeeds;
+		Rotation2d CCWRad = Rotation2d.fromDegrees(-(sensorNavx.getAngle() % 360));
+		System.out.println(sensorNavx.getAngle() + "NAVX ANGLE");
+		System.out.println(CCWRad + "ccw rad");
+
+		if(!flightStickLeft.getRawButton(1)){
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, radSpeed, CCWRad);
 		}else{
 			chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, radSpeed);
+		}
+
+		if(flightStickRight.getRawButton(1)){
+			sensorNavx.reset();
 		}
 
 
