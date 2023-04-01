@@ -68,8 +68,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class Robot extends TimedRobot {
 
 	//constants
-	public static double kTrackWidth = Units.inchesToMeters(28.0);
-	public static double kWheelBase = Units.inchesToMeters(28.0);
+	public static double kTrackWidth = Units.inchesToMeters(29.0);
+	public static double kWheelBase = Units.inchesToMeters(28.5);
 
 	public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
 		new Translation2d(kWheelBase / 2, -kTrackWidth / 2),

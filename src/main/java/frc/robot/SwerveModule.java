@@ -30,7 +30,7 @@ public class SwerveModule {
     private final TalonSRX turningMotor;
 
     private final double absoluteEncoderOffsetNative;
-    private final double RevsToRevs = 22.0;
+    private final double RevsToRevs = 3.6;
     private final double NativeToRevs = 4096.0;
     private final double RevsToRadians = 3.14*2;
 
@@ -52,9 +52,13 @@ public class SwerveModule {
 
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
+        
 
         // turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+
+        turningMotor.setNeutralMode(NeutralMode.Brake);
+        driveMotor.setNeutralMode(NeutralMode.Coast);
 
 
         // driveEncoder.setPositionConversionFactor(0.239f);
@@ -71,7 +75,7 @@ public class SwerveModule {
     }
 
     public double getTurningPosition() {
-        return turningMotor.getSelectedSensorPosition()*(RevsToRadians*1.0/RevsToRevs/NativeToRevs);
+        return (turningMotor.getSelectedSensorPosition() - absoluteEncoderOffsetNative)*(RevsToRadians*1.0/RevsToRevs/NativeToRevs);
     }
 
     public double getDriveVelocity() {
@@ -109,6 +113,7 @@ public class SwerveModule {
         driveMotor.set(ControlMode.PercentOutput, state.speedMetersPerSecond / 5.0);
         float pidVal = (float)(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
 
+
         if(pidVal < -0.99f){
             pidVal = -0.99f;
         }else if(pidVal > 0.99f){
@@ -121,9 +126,9 @@ public class SwerveModule {
             // System.out.println(getAbsoluteEncoderRad() + " abs encoder");
             // System.out.println(getTurningPosition() + " rel encoder");
 
-                // System.out.println(getTurningPosition() + " get turning position");
-                // System.out.println(state.angle.getRadians() + " state.angle.getRadians()");
-                // System.out.println(pidVal + " pid");
+                System.out.println(getTurningPosition() + " get turning position");
+                System.out.println(state.angle.getRadians() + " state.angle.getRadians()");
+                System.out.println(pidVal + " pid");
 
 
         // SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "]
